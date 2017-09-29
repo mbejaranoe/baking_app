@@ -17,15 +17,28 @@
             android:id="@+id/recipe_image_view"
             android:layout_width="150dp"
             android:layout_height="match_parent"
-            tools:src="@drawable/ic_baking_icon"
             />
 
-        <TextView
-            android:id="@+id/recipe_name_text_view"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Sopa de caracol"
-            android:layout_gravity="center_vertical"/>
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/recipe_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/recipe_servings_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
