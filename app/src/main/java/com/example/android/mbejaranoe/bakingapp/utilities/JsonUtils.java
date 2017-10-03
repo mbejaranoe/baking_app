@@ -36,18 +36,6 @@ public final class JsonUtils {
         final String RECIPE_SERVINGS = "servings";
         final String RECIPE_IMAGE = "image";
 
-        /* Key values for ingredients in Json format */
-        final String INGREDIENT_QUANTITY = "quantity";
-        final String INGREDIENT_MEASURE = "measure";
-        final String INGREDIENT_NAME = "ingredient";
-
-        /* Key values for steps in Json format */
-        final String STEP_ID = "id";
-        final String STEP_SHORT_DESCRIPTION = "shortDescription";
-        final String STEP_DESCRIPTION = "description";
-        final String STEP_VIDEO_URL = "videoURL";
-        final String STEP_THUMBNAIL_URL = "thumbnailURL";
-
         JSONArray recipesArray = new JSONArray(recipeJsonStr);
         ContentValues[] recipes = new ContentValues[recipesArray.length()];
 

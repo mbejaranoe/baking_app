@@ -2,9 +2,12 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.android.mbejaranoe.bakingapp.data.RecipeContract;
+import com.example.android.mbejaranoe.bakingapp.data.RecipeDBHelper;
 import com.example.android.mbejaranoe.bakingapp.utilities.JsonUtils;
 
 import org.json.JSONException;
@@ -75,6 +78,16 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
 
             recipeJsonStr = buffer.toString();
             ContentValues[] recipes = JsonUtils.getRecipeDataFromJson(recipeJsonStr);
+            Log.v(LOG_TAG, recipes.length + " recetas.");
+            RecipeDBHelper dbHelper = new RecipeDBHelper(mContext);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            db.beginTransaction();
+            for (int i = 0 ; i < recipes.length ; i++){
+                if (db.insert(RecipeContract.RecipeEntry.TABLE_NAME, null, recipes[i])>0) {
+                    Log.v(LOG_TAG, "receta " + i + " insertada.");
+                }
+            }
+            db.endTransaction();
         }
         catch (MalformedURLException e){
             Log.e(LOG_TAG, "Error ", e);
