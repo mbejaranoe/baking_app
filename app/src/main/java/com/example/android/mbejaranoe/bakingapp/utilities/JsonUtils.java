@@ -107,20 +107,38 @@ public final class JsonUtils {
         return recipes;
     }
 
+    /* Takes an ArrayList<Ingredient> and returns a String in order to store it in the db*/
     public static String ingredientsToString(ArrayList<Ingredient> ingredientsArray) throws JSONException {
         String arrayList;
-        JSONObject json = new JSONObject();
-        json.put("ingredients", new JSONArray(ingredientsArray));
-        arrayList = json.toString();
+        JSONArray jsonArray = new JSONArray();
+
+        for (int i = 0; i <ingredientsArray.size(); i++) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("quantity", ingredientsArray.get(i).getQuantity());
+            jsonObject.put("measure", ingredientsArray.get(i).getMeasure());
+            jsonObject.put("ingredient", ingredientsArray.get(i).getIngredient());
+            jsonArray.put(jsonObject);
+        }
+        arrayList = jsonArray.toString();
 
         return arrayList;
     }
 
+    /* Takes an ArrayList<Step> and returns a String in order to store it in the db*/
     public static String stepsToString(ArrayList<Step> stepsArray) throws JSONException{
         String arrayList;
-        JSONObject json = new JSONObject();
-        json.put("steps", new JSONArray(stepsArray));
-        arrayList = json.toString();
+        JSONArray jsonArray = new JSONArray();
+
+        for (int i = 0; i <stepsArray.size(); i++) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", stepsArray.get(i).getId());
+            jsonObject.put("shortDescription", stepsArray.get(i).getShortDescription());
+            jsonObject.put("description", stepsArray.get(i).getDescription());
+            jsonObject.put("videoURL", stepsArray.get(i).getVideoURL());
+            jsonObject.put("thumbnailURL", stepsArray.get(i).getThumbnailURL());
+            jsonArray.put(jsonObject);
+        }
+        arrayList = jsonArray.toString();
 
         return arrayList;
     }
