@@ -1,6 +1,7 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -17,6 +18,14 @@ public class RecipeFragment extends Fragment {
 
     //Constructor for instantiating the fragment
     public RecipeFragment(){
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        FetchRecipeTask fetchRecipeTask = new FetchRecipeTask(getContext());
+        fetchRecipeTask.execute();
     }
 
     @Override
