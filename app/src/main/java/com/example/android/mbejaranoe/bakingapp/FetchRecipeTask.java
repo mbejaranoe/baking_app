@@ -2,6 +2,7 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -78,16 +79,34 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
 
             recipeJsonStr = buffer.toString();
             ContentValues[] recipes = JsonUtils.getRecipeDataFromJson(recipeJsonStr);
-            Log.v(LOG_TAG, recipes.length + " recetas.");
             RecipeDBHelper dbHelper = new RecipeDBHelper(mContext);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             db.beginTransaction();
             for (int i = 0 ; i < recipes.length ; i++){
                 if (db.insert(RecipeContract.RecipeEntry.TABLE_NAME, null, recipes[i])>0) {
-                    Log.v(LOG_TAG, "receta " + i + " insertada.");
+                    Log.v(LOG_TAG, "Recipe " + i + " insertion successful.");
                 }
             }
             db.endTransaction();
+            Cursor cursor = db.query(
+                    RecipeContract.RecipeEntry.TABLE_NAME,  // String table
+                    null,                                   // String[] columns
+                    null,                                   // String selection
+                    null,                                   // String[] selectionArgs
+                    null,                                   // String groupBy
+                    null,                                   // String having
+                    null                                    // String orderBy
+                    );
+            if (!cursor.moveToFirst()) {
+                Log.v(LOG_TAG, "Empty cursor.");
+                return null;
+            }
+            int index = cursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_NAME);
+            while (cursor.moveToNext()){
+                Log.v(LOG_TAG, "Recipe name: " + cursor.getString(index));
+            }
+            cursor.close();
+            db.close();
         }
         catch (MalformedURLException e){
             Log.e(LOG_TAG, "Error ", e);
