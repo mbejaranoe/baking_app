@@ -19,6 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.example.android.mbejaranoe.bakingapp"
+            android:name="com.example.android.mbejaranoe.bakingapp.data.RecipeContentProvider"
+            android:exported="false" />
     </application>
+    
+    
 
 </manifest>

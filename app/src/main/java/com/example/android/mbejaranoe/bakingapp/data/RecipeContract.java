@@ -1,5 +1,6 @@
 package com.example.android.mbejaranoe.bakingapp.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -9,8 +10,16 @@ import android.provider.BaseColumns;
 
 public class RecipeContract {
 
+    // Helping constants for RecipeContentProvider
+    public static final String AUTHORITY = "com.example.android.mbejaranoe.bakingapp";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final String PATH_RECIPES = "recipes";
+
     /* Inner class that defines the table contents of the recipes table */
     public static final class RecipeEntry implements BaseColumns {
+
+        // Helping constants for RecipeContentProvider
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECIPES).build();
 
         public static final String TABLE_NAME = "recipes";
 
