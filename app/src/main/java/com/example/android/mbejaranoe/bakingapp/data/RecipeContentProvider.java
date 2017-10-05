@@ -81,6 +81,45 @@ public class RecipeContentProvider extends ContentProvider {
         return retCursor;
     }
 
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        final SQLiteDatabase db = mRecipeDBHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int rowsInserted;
+        long _id;
+        String tableName;
+
+        switch (match){
+            case (RECIPES):
+                tableName = RecipeEntry.TABLE_NAME;
+                break;
+            case (RECIPES_WITH_ID):
+                tableName = RecipeEntry.TABLE_NAME;
+                break;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+
+        db.beginTransaction();
+        rowsInserted = 0;
+
+        try {
+            for (ContentValues value : values) {
+                _id = db.insert(tableName, null, value);
+                if (_id != -1) {
+                    rowsInserted++;
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        if (rowsInserted > 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsInserted;
+    }
+
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {

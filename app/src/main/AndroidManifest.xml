@@ -4,6 +4,11 @@
 
     <!-- Permission to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permission to detect the network state. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Permission to use the RecipeContentProvider. -->
+    <uses-permission android:name="com.example.android.mbejaranoe.bakingapp.data.RecipeContentProvider"/>
+
 
     <application
         android:allowBackup="true"

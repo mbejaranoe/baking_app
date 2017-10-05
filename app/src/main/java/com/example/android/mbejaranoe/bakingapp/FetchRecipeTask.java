@@ -2,12 +2,10 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract;
-import com.example.android.mbejaranoe.bakingapp.data.RecipeDBHelper;
 import com.example.android.mbejaranoe.bakingapp.utilities.JsonUtils;
 
 import org.json.JSONException;
@@ -24,7 +22,7 @@ import java.net.URL;
  * Created by Manolo on 29/09/2017.
  */
 
-public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
+public class FetchRecipeTask extends AsyncTask<Void, Void, ContentValues[]> {
 
     private final String LOG_TAG = FetchRecipeTask.class.getSimpleName();
 
@@ -35,7 +33,7 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... strings) {
+    protected ContentValues[] doInBackground(Void... voids) {
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -44,6 +42,8 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
 
         // Will contain the raw JSON response as a string.
         String recipeJsonStr = null;
+        // Will contain the recipes info to be returned by the doInBackground method
+        ContentValues[] recipes = null;
 
         try {
             final String RECIPES_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
@@ -77,15 +77,7 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
             }
 
             recipeJsonStr = buffer.toString();
-            ContentValues[] recipes = JsonUtils.getRecipeDataFromJson(recipeJsonStr);
-            RecipeDBHelper dbHelper = new RecipeDBHelper(mContext);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            for (int i = 0 ; i < recipes.length ; i++){
-                if (db.insert(RecipeContract.RecipeEntry.TABLE_NAME, null, recipes[i])>0) {
-                    Log.v(LOG_TAG, "Recipe " + i + " insertion successful.");
-                }
-            }
-            db.close();
+            recipes = JsonUtils.getRecipeDataFromJson(recipeJsonStr);
         }
         catch (MalformedURLException e){
             Log.e(LOG_TAG, "Error ", e);
@@ -108,6 +100,13 @@ public class FetchRecipeTask extends AsyncTask<String, Void, Void> {
                 }
             }
         }
-        return null;
+        return recipes;
+    }
+
+    @Override
+    protected void onPostExecute(ContentValues[] contentValues) {
+        if (mContext.getContentResolver() != null){
+            mContext.getContentResolver().bulkInsert(RecipeContract.RecipeEntry.CONTENT_URI, contentValues);
+        }
     }
 }

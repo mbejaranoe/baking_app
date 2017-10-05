@@ -1,25 +1,9 @@
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.android.mbejaranoe.bakingapp.MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.mbejaranoe.bakingapp.MainActivity">
-
-    <LinearLayout
-        android:id="@+id/baking_app_linear_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/recipe_container">
-
-        </FrameLayout>
-
-    </LinearLayout>
-
-
-</ScrollView>
+    android:id="@+id/container"
+    />

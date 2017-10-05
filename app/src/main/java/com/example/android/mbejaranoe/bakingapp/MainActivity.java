@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         // Use the fragment manager and transaction to add the fragment to the screen
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(R.id.recipe_container, recipeFragment)
+                .add(R.id.container, recipeFragment)
                 .commit();
     }
 }
