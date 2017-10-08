@@ -48,7 +48,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         int servingsIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_SERVINGS);
 
         byte[] imageByteArrayRecipe = mCursor.getBlob(imageIndex);
-        if (imageByteArrayRecipe == null){
+        if (imageByteArrayRecipe.length == 0){
             holder.recipeImageView.setImageResource(R.drawable.generic_recipe_image);
         } else {
             Bitmap bitmapRecipe = BitmapFactory.decodeByteArray(imageByteArrayRecipe, 0, imageByteArrayRecipe.length);
