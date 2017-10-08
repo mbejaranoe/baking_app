@@ -40,7 +40,7 @@ public class RecipeContract {
         public static final String COLUMN_SERVINGS = "servings";
 
         /* Column with the image URL for the recipe, stored as a String */
-        public static final String COLUMN_IMAGE = "image";
+        public static final String COLUMN_IMAGE_URL = "image_url";
     }
 
     /* Inner class that defines the table contents of the ingredients table */

@@ -34,7 +34,7 @@ public final class JsonUtils {
         final String RECIPE_INGREDIENTS = "ingredients";
         final String RECIPE_STEPS = "steps";
         final String RECIPE_SERVINGS = "servings";
-        final String RECIPE_IMAGE = "image";
+        final String RECIPE_IMAGE_URL = "image";
 
         JSONArray recipesArray = new JSONArray(recipeJsonStr);
         ContentValues[] recipes = new ContentValues[recipesArray.length()];
@@ -83,13 +83,9 @@ public final class JsonUtils {
             recipes[i].put(RecipeEntry.COLUMN_SERVINGS, recipesArray.getJSONObject(i).getInt(RECIPE_SERVINGS));
             Log.v(TAG,RecipeEntry.COLUMN_SERVINGS + ": " + recipesArray.getJSONObject(i).getInt(RECIPE_SERVINGS));
 
-            String imageURL = recipesArray.getJSONObject(i).getString(RECIPE_IMAGE);
-            byte[] image = new byte[0];
-            if (imageURL != null && !(imageURL.equals(""))) {
-                image = NetworkUtils.getImageFromURL(imageURL);
-            }
-            recipes[i].put(RecipeEntry.COLUMN_IMAGE, image);
-            Log.v(TAG,RecipeEntry.COLUMN_IMAGE + ": " + imageURL);
+            String imageURL = recipesArray.getJSONObject(i).getString(RECIPE_IMAGE_URL);
+            recipes[i].put(RecipeEntry.COLUMN_IMAGE_URL, imageURL);
+            Log.v(TAG,RecipeEntry.COLUMN_IMAGE_URL + ": " + imageURL);
         }
 
         return recipes;

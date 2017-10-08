@@ -18,7 +18,7 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recipes.db";
 
     /* Database version for updating database schema */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     /* Constructor */
     public RecipeDBHelper(Context context){
@@ -37,7 +37,7 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
                 RecipeEntry.COLUMN_INGREDIENTS + " TEXT NOT NULL, " +
                 RecipeEntry.COLUMN_STEPS + " TEXT NOT NULL, " +
                 RecipeEntry.COLUMN_SERVINGS + " INTEGER NOT NULL, " +
-                RecipeEntry.COLUMN_IMAGE + " BLOB," +
+                RecipeEntry.COLUMN_IMAGE_URL + " TEXT," +
                 "UNIQUE (" + RecipeEntry.COLUMN_RECIPE_ID + ") ON CONFLICT REPLACE);";
 
         /* Call to execute the creating table sentence */

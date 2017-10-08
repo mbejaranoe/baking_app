@@ -2,8 +2,6 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by Manolo on 04/10/2017.
@@ -21,6 +20,8 @@ import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdapterViewHolder> {
 
     private Cursor mCursor;
+    private Context mContext;
+    private int indexImagePlaceHolder;
 
     public RecipeAdapter(){
 
@@ -28,9 +29,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
 
     @Override
     public RecipeAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+        mContext = parent.getContext();
+        indexImagePlaceHolder = 0;
         int layoutId = R.layout.list_item_recipe;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutId, parent, shouldAttachToParentImmediately);
@@ -43,16 +45,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     public void onBindViewHolder(RecipeAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        int imageIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_IMAGE);
+        int imageUrlIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_IMAGE_URL);
         int nameIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME);
         int servingsIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_SERVINGS);
 
-        byte[] imageByteArrayRecipe = mCursor.getBlob(imageIndex);
-        if (imageByteArrayRecipe.length == 0){
-            holder.recipeImageView.setImageResource(R.drawable.generic_recipe_image);
+        if (mCursor.getString(imageUrlIndex).length() == 0) {
+            Picasso.with(mContext).load(getRecipeImagePlaceholder(indexImagePlaceHolder)).into(holder.recipeImageView);
         } else {
-            Bitmap bitmapRecipe = BitmapFactory.decodeByteArray(imageByteArrayRecipe, 0, imageByteArrayRecipe.length);
-            holder.recipeImageView.setImageBitmap(bitmapRecipe);
+            Picasso.with(mContext).load(mCursor.getString(imageUrlIndex)).into(holder.recipeImageView);
         }
         holder.recipeNameTextView.setText(mCursor.getString(nameIndex));
         holder.recipeServingsTextView.setText(mCursor.getString(servingsIndex));
@@ -66,6 +66,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     void swapCursor(Cursor newCursor){
         mCursor = newCursor;
         notifyDataSetChanged();
+    }
+
+    public int getRecipeImagePlaceholder(int index){
+        int[] recipeImagePlaceholders = {
+                R.drawable.generic01,
+                R.drawable.generic02,
+                R.drawable.generic03,
+                R.drawable.generic04
+        };
+        if (indexImagePlaceHolder == 3) {
+            indexImagePlaceHolder = 0;
+        } else {
+            indexImagePlaceHolder++;
+        }
+        return recipeImagePlaceholders[index];
     }
 
     public class RecipeAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

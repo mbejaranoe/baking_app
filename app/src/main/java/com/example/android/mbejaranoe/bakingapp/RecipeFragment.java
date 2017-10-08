@@ -34,7 +34,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry.COLUMN_RECIPE_ID,
             RecipeContract.RecipeEntry.COLUMN_NAME, RecipeContract.RecipeEntry.COLUMN_SERVINGS,
-            RecipeContract.RecipeEntry.COLUMN_IMAGE};
+            RecipeContract.RecipeEntry.COLUMN_IMAGE_URL};
 
     //Constructor for instantiating the fragment
     public RecipeFragment(){
