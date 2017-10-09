@@ -20,6 +20,7 @@ import java.net.URL;
 
 /**
  * Created by Manolo on 29/09/2017.
+ * Class to fetch the recipes data from the internet in a background thread
  */
 
 public class FetchRecipeTask extends AsyncTask<Void, Void, ContentValues[]> {
@@ -28,10 +29,12 @@ public class FetchRecipeTask extends AsyncTask<Void, Void, ContentValues[]> {
 
     private final Context mContext;
 
+    // Constructor
     public FetchRecipeTask(Context context) {
         mContext = context;
     }
 
+    // Get the recipes data and store them in a ContentValues[]
     @Override
     protected ContentValues[] doInBackground(Void... voids) {
 
@@ -103,6 +106,7 @@ public class FetchRecipeTask extends AsyncTask<Void, Void, ContentValues[]> {
         return recipes;
     }
 
+    // The ContentValues[] returned in the doInBackground method is inserted in the RecipeContentProvider
     @Override
     protected void onPostExecute(ContentValues[] contentValues) {
         if (mContext.getContentResolver() != null){

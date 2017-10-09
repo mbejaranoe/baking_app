@@ -78,6 +78,4 @@ public class RecipeContract {
         /* Column with the thumbnail URL, stored as a String */
         public static final String COLUMN_THUMBNAIL_URL = "thumbnail_url";
     }
-
-
 }

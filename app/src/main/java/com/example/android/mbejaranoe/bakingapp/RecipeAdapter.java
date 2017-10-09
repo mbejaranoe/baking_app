@@ -16,18 +16,22 @@ import com.squareup.picasso.Picasso;
 
 /**
  * Created by Manolo on 04/10/2017.
+ * Adapter to show in the screen the recipes
  */
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdapterViewHolder> {
 
+    // Cursor to store the recipes data
     private Cursor mCursor;
     private Context mContext;
+    // Index of the images placeholder
     private int indexImagePlaceHolder;
 
+    // Constructor
     public RecipeAdapter(){
-
     }
 
+    // Required Adapter method
     @Override
     public RecipeAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
@@ -42,6 +46,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         return viewHolder;
     }
 
+    // Required Adapter method
     @Override
     public void onBindViewHolder(RecipeAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
@@ -50,15 +55,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         int nameIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME);
         int servingsIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_SERVINGS);
 
-        if (mCursor.getString(imageUrlIndex).length() == 0) {
+        if (mCursor.getString(imageUrlIndex).length() == 0) { // there is no image
             Picasso.with(mContext).load(getRecipeImagePlaceholder(indexImagePlaceHolder)).into(holder.recipeImageView);
-        } else {
+        } else { // there is an image
             Picasso.with(mContext).load(mCursor.getString(imageUrlIndex)).into(holder.recipeImageView);
         }
         holder.recipeNameTextView.setText(mCursor.getString(nameIndex));
         holder.recipeServingsTextView.setText(mCursor.getString(servingsIndex));
     }
 
+    // Required Adapter method
     @Override
     public int getItemCount() {
         return (mCursor == null) ? 0 : mCursor.getCount();
@@ -69,6 +75,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         notifyDataSetChanged();
     }
 
+    // Helper method to get an image placeholder in case there is an error with the image
+    // in the recipes Json object
     public int getRecipeImagePlaceholder(int index){
         int[] recipeImagePlaceholders = {
                 R.drawable.generic01,
@@ -84,6 +92,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         return recipeImagePlaceholders[index];
     }
 
+    // ViewHolder class
     public class RecipeAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private CardView recipeCardView;
@@ -91,6 +100,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         private TextView recipeNameTextView;
         private TextView recipeServingsTextView;
 
+        // Constructor
         public RecipeAdapterViewHolder(View itemView) {
             super(itemView);
 
@@ -102,6 +112,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
             itemView.setOnClickListener(this);
         }
 
+        // onClick method to start the recipe detail activity
         @Override
         public void onClick(View view) {
 

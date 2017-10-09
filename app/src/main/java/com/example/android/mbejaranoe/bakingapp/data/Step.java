@@ -65,12 +65,6 @@ public class Step {
         return jsonObject;
     }
 
-    /*public String getStringFromJson(){
-        String stepString;
-
-    }
-    */
-
     /* Setter methods */
     public void setId(int id){
         mId = id;

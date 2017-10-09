@@ -20,6 +20,7 @@ import org.json.JSONException;
 
 /**
  * Created by Manolo on 09/10/2017.
+ * Fragment to show the recipe details
  */
 
 public class RecipeDetailFragment extends Fragment {
@@ -31,9 +32,11 @@ public class RecipeDetailFragment extends Fragment {
             RecipeEntry.COLUMN_STEPS
     };
 
+    // Member variables
     public static Ingredient[] mIngredients;
     public static Step[] mSteps;
 
+    // Constructor
     public RecipeDetailFragment(){
     }
 
@@ -53,7 +56,7 @@ public class RecipeDetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
 
         if (intent.hasExtra("recipe_id")){
-            int recipeId = intent.getIntExtra("recipe_id", 83);
+            int recipeId = intent.getIntExtra("recipe_id", 0);
 
             // Query the Content Provider
             Cursor cursorRecipe;
@@ -68,7 +71,6 @@ public class RecipeDetailFragment extends Fragment {
                     null);
 
             cursorRecipe.moveToFirst();
-            //Log.v(LOG_TAG, "Recipe id for the first item: " + cursorRecipe.getInt(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_RECIPE_ID)));
 
             // Get the ingredients in String format, as it was stored in the Content Provider
             String ingredientsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_INGREDIENTS));

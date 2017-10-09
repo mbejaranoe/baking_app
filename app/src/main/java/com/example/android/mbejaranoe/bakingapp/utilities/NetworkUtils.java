@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 /**
  * Created by Manolo on 03/10/2017.
- * utilities methods for easily make operations in the Internet
+ * Utility methods for easily make operations in the Internet
  */
 
 public final class NetworkUtils {

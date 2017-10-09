@@ -162,11 +162,13 @@ public class RecipeContentProvider extends ContentProvider {
         return returnUri;
     }
 
+    // This method is not necessary for the purpose of the Content Provider
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
         return 0;
     }
 
+    // This method is not necessary for the purpose of the Content Provider
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         return 0;

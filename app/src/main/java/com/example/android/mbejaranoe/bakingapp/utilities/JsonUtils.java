@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Manolo on 03/10/2017.
- * utilities method for handling Json objects
+ * Utility methods for handling Json objects
  */
 
 public final class JsonUtils {
@@ -28,7 +28,6 @@ public final class JsonUtils {
      */
     public static ContentValues[] getRecipeDataFromJson(String recipeJsonStr) throws JSONException {
 
-        /* Key values for recipes in Json format */
         final String RECIPE_ID = "id";
         final String RECIPE_NAME = "name";
         final String RECIPE_INGREDIENTS = "ingredients";
@@ -48,7 +47,6 @@ public final class JsonUtils {
             recipes[i].put(RecipeEntry.COLUMN_NAME, recipesArray.getJSONObject(i).getString(RECIPE_NAME));
             Log.v(TAG,RecipeEntry.COLUMN_NAME + ": " + recipesArray.getJSONObject(i).getString(RECIPE_NAME));
 
-            /* Código para obtener los ingredientes */
             JSONArray ingredientsArray = recipesArray.getJSONObject(i).getJSONArray(RECIPE_INGREDIENTS);
             ArrayList<Ingredient> ingredients = new ArrayList<>();
             for (int j = 0; j < ingredientsArray.length() ; j++) {
@@ -64,7 +62,6 @@ public final class JsonUtils {
             recipes[i].put(RecipeEntry.COLUMN_INGREDIENTS, ingredientsString);
             Log.v(TAG,RecipeEntry.COLUMN_INGREDIENTS + ": " + ingredientsString);
 
-            /* Código para obtener los pasos */
             JSONArray stepsArray = recipesArray.getJSONObject(i).getJSONArray(RECIPE_STEPS);
             ArrayList<Step> steps = new ArrayList<>();
             for (int k = 0; k < stepsArray.length() ; k++) {

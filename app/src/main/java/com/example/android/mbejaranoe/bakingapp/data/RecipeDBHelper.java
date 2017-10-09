@@ -10,6 +10,7 @@ import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 
 /**
  * Created by Manolo on 02/10/2017.
+ * Helper class necessary to implement the RecipeContentProvider
  */
 
 public class RecipeDBHelper extends SQLiteOpenHelper {

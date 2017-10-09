@@ -22,6 +22,7 @@ import com.example.android.mbejaranoe.bakingapp.data.RecipeContract;
 
 /**
  * Created by Manolo on 29/09/2017.
+ * Fragment to show the recipes
  */
 
 public class RecipeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
