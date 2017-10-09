@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Baking app</string>
     <string name="offline_status_recipe_info_message">Unable to fetch recipes info, you are not connected to the internet.</string>
+    <string name="title_activity_recipe_detail">Details</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -103,14 +104,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
 
         @Override
         public void onClick(View view) {
-            /*
-            Intent intent = new Intent(view.getContext(), DetailActivity.class);
+
+            Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            String tmdbId = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TMDB_ID));
-            intent.putExtra("movie", tmdbId);
+            String recipeId = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_ID));
+            intent.putExtra("recipe_id", recipeId);
             view.getContext().startActivity(intent);
-             */
         }
     }
 }
