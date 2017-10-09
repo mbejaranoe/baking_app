@@ -109,7 +109,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
             String recipeId = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_ID));
+            String recipeName = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME));
             intent.putExtra("recipe_id", recipeId);
+            intent.putExtra("name", recipeName);
             view.getContext().startActivity(intent);
         }
     }
