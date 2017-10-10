@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,10 @@ public class RecipeDetailFragment extends Fragment {
     // Member variables
     public static Ingredient[] mIngredients;
     public static Step[] mSteps;
+
+    private RecyclerView mRecipeDetailRecyclerView;
+    private RecipeDetailAdapter mRecipeDetailAdapter;
+    private RecyclerView.LayoutManager mRecipeDetailLayoutManager;
 
     // Constructor
     public RecipeDetailFragment(){
@@ -111,6 +117,13 @@ public class RecipeDetailFragment extends Fragment {
             Log.v(LOG_TAG, "Retrieved " + mSteps.length + " steps!");
         }
 
+        mRecipeDetailRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe_detail);
+        mRecipeDetailLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        mRecipeDetailRecyclerView.setLayoutManager(mRecipeDetailLayoutManager);
+
+        mRecipeDetailAdapter = new RecipeDetailAdapter(mIngredients, mSteps, getContext());
+        mRecipeDetailRecyclerView.setAdapter(mRecipeDetailAdapter);
+        
         return rootView;
     }
 }
