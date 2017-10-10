@@ -15,8 +15,10 @@
         android:id="@+id/step_thumbnail_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
         android:scaleType="centerCrop"
-        tools:src="@drawable/generic01"/>
+        tools:src="@drawable/recipestepplaceholder" />
 
     <TextView
         android:id="@+id/step_short_description_text_view"

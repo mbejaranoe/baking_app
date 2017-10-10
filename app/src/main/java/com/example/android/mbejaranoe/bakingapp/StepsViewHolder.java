@@ -18,22 +18,20 @@ public class StepsViewHolder extends RecyclerView.ViewHolder {
 
     private ImageView stepThumbnailImageView;
     private TextView stepShortDescriptionTextView;
-    private Context mContext;
 
     public StepsViewHolder(View itemView) {
         super(itemView);
 
         stepThumbnailImageView = (ImageView) itemView.findViewById(R.id.step_thumbnail_image_view);
         stepShortDescriptionTextView = (TextView) itemView.findViewById(R.id.step_short_description_text_view);
-        mContext = itemView.getContext();
     }
 
     public static void setStepsViewHolder(Context context, StepsViewHolder holder, Step step){
 
         if (step.getThumbnailURL().length() == 0) {
-            Picasso.with(context).load(R.drawable.ic_recipestepplaceholder).into(holder.stepThumbnailImageView);
+            Picasso.with(context).load(R.drawable.recipestepplaceholder_blue).into(holder.stepThumbnailImageView);
         } else {
-            Picasso.with(context).load(step.getThumbnailURL()).placeholder(R.drawable.ic_recipestepplaceholder)
+            Picasso.with(context).load(step.getThumbnailURL()).placeholder(R.drawable.recipestepplaceholder_blue)
                     .into(holder.stepThumbnailImageView);
         }
 

@@ -123,7 +123,7 @@ public class RecipeDetailFragment extends Fragment {
 
         mRecipeDetailAdapter = new RecipeDetailAdapter(mIngredients, mSteps, getContext());
         mRecipeDetailRecyclerView.setAdapter(mRecipeDetailAdapter);
-        
+
         return rootView;
     }
 }
