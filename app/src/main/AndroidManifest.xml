@@ -33,6 +33,15 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <activity
+            android:name=".StepDetailActivity"
+            android:label="@string/title_activity_step_detail"
+            android:parentActivityName=".RecipeDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RecipeDetailActivity" />
+        </activity>
+
         <provider
             android:authorities="com.example.android.mbejaranoe.bakingapp"
             android:name="com.example.android.mbejaranoe.bakingapp.data.RecipeContentProvider"

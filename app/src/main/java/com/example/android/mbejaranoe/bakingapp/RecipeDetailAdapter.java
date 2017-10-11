@@ -21,8 +21,8 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int VIEW_TYPE_STEPS = 1;
 
     // Member variables
-    private Ingredient[] mIngredients;
-    private Step[] mSteps;
+    public Ingredient[] mIngredients;
+    public Step[] mSteps;
     private Context mContext;
 
     // Constructor
@@ -63,6 +63,7 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case VIEW_TYPE_STEPS:
                 StepsViewHolder stepsViewHolder = (StepsViewHolder) holder;
+                stepsViewHolder.setStepsArrayToStepsViewHolder(mSteps, mIngredients.length);
                 StepsViewHolder.setStepsViewHolder(mContext, stepsViewHolder, mSteps[position - mIngredients.length]);
                 break;
         }
