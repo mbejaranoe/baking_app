@@ -3,4 +3,5 @@
     <string name="offline_status_recipe_info_message">Unable to fetch recipes info, you are not connected to the internet.</string>
     <string name="title_activity_recipe_detail">Recipe details</string>
     <string name="title_activity_step_detail">Step details</string>
+    <string name="no_step_description_message">There is no description for this step. It must be so easy!</string>
 </resources>
