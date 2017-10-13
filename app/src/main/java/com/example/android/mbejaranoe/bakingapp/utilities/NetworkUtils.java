@@ -17,7 +17,7 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     /* Download an image from the internet having its url in String format */
-    public static byte[] getImageFromURL(String url){
+    public static Bitmap getImageFromURL(String url){
         Bitmap bitmap = null;
         try {
             InputStream in = new java.net.URL(url).openStream();
@@ -29,7 +29,8 @@ public final class NetworkUtils {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
-        return byteArray;
+        Bitmap bitmap2 = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        return bitmap2;
     }
 
 }
