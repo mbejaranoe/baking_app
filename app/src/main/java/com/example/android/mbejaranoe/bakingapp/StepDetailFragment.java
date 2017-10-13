@@ -72,7 +72,7 @@ public class StepDetailFragment extends Fragment {
         Bitmap artwork = null;
         if (intent.hasExtra("thumbnailURL")) {
             if (intent.getStringExtra("thumbnailURL").length() == 0) {
-                artwork = BitmapFactory.decodeResource(getResources(),R.drawable.recipestepplaceholder);
+                artwork = BitmapFactory.decodeResource(getResources(),R.drawable.recipestepplaceholder_black);
             } else {
                 artwork = NetworkUtils.getImageFromURL(intent.getStringExtra("thumbnailURL"));
             }
