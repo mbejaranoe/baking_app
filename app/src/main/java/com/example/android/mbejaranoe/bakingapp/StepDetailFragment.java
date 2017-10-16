@@ -78,76 +78,95 @@ public class StepDetailFragment extends Fragment {
         prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
         nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
 
+        // Get the intent and its extras
         Intent intent = getActivity().getIntent();
         if (intent.hasExtra("_id") && intent.hasExtra("stepIndex")) {
-            // get the recipe _id
-            mRecipeId = intent.getIntExtra("_id", RECIPE_ID_DEFAULT_VALUE);
-            Log.v(LOG_TAG, " intent recipe_id: " + mRecipeId);
-            if (mRecipeId == RECIPE_ID_DEFAULT_VALUE) {
-                Log.v(LOG_TAG, "Error retrieving recipe_id from the intent. _id: " + mRecipeId);
-                return rootView;
-            }
-            // query the content provider to get the recipe
-            mCursor = getContext().getContentResolver().query(
-                    RecipeEntry.CONTENT_URI,
-                    null,
-                    "_id=?",
-                    new String[]{String.valueOf(mRecipeId)},
-                    null);
-
-            if (mCursor.moveToFirst()){
-                // get the json string with the steps details
-                String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
-                JSONArray stepsJsonArray = null;
-                try {
-                    stepsJsonArray = new JSONArray(stringSteps);
-                } catch (JSONException e){
-                    Log.e(LOG_TAG, "Error parsing steps JSONArray: " + stringSteps);
-                }
-                // parse the json string into a Step[]
-                mSteps = new Step[stepsJsonArray.length()];
-                for (int i = 0; i < stepsJsonArray.length(); i++){
-                    try {
-                        mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
-                    } catch (JSONException e) {
-                        Log.e(LOG_TAG, "Error parsing JSONObject step.");
-                    }
-                }
-            }
-            // get the step index
-            mStepIndex = intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE);
-            Log.v(LOG_TAG, " intent step index: " + mStepIndex);
-            if (mStepIndex == STEP_INDEX_DEFAULT_VALUE){
-                Log.v(LOG_TAG, "Error retrieving step index from the intent. stepIndex: " + mStepIndex);
-                return rootView;
-            }
-            // get the step
-            Step step = mSteps[mStepIndex];
-            // populate description view
-            if (step.getDescription().equals("")) {
-                stepDetailDescriptionTextView.setText(getResources()
-                        .getString(R.string.no_step_description_message));
-            } else {
-                stepDetailDescriptionTextView.setText(step.getDescription());
-            }
-            // populate the thumbnail view
-            Bitmap artwork = null;
-            if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
-                artwork = BitmapFactory.decodeResource(getResources(),R.drawable.recipestepplaceholder_black);
-            } else {
-                artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
-            }
-
-            stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
-
-            if (!(step.getVideoURL().equals(""))) {
-                initializePlayer(Uri.parse(step.getVideoURL()));
-            } else {
-                Log.v(LOG_TAG, "No video url available.");
-            }
+            updateStepDetails(intent.getIntExtra("_id", RECIPE_ID_DEFAULT_VALUE),
+                intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE));
         }
 
         return rootView;
+    }
+
+    public void updateStepDetails(int id, int index){
+
+        mRecipeId = id;
+        Log.v(LOG_TAG, " intent recipe_id: " + mRecipeId);
+        if (mRecipeId == RECIPE_ID_DEFAULT_VALUE) {
+            Log.v(LOG_TAG, "Error retrieving recipe_id from the intent. _id: " + mRecipeId);
+            return;
+        }
+        // query the content provider to get the recipe
+        mCursor = getContext().getContentResolver().query(
+                RecipeEntry.CONTENT_URI,
+                null,
+                "_id=?",
+                new String[]{String.valueOf(mRecipeId)},
+                null);
+
+        if (mCursor.moveToFirst()){
+            // get the json string with the steps details
+            String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
+            JSONArray stepsJsonArray = null;
+            try {
+                stepsJsonArray = new JSONArray(stringSteps);
+            } catch (JSONException e){
+                Log.e(LOG_TAG, "Error parsing steps JSONArray: " + stringSteps);
+            }
+            // parse the json string into a Step[]
+            mSteps = new Step[stepsJsonArray.length()];
+            for (int i = 0; i < stepsJsonArray.length(); i++){
+                try {
+                    mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Error parsing JSONObject step.");
+                }
+            }
+        }
+        // get the step index
+        mStepIndex = index;
+        Log.v(LOG_TAG, " intent step index: " + mStepIndex);
+        if (mStepIndex == STEP_INDEX_DEFAULT_VALUE){
+            Log.v(LOG_TAG, "Error retrieving step index from the intent. stepIndex: " + mStepIndex);
+            return;
+        }
+        // get the step
+        Step step = mSteps[mStepIndex];
+        // set the title for the parent activity
+        getActivity().setTitle(step.getShortDescription());
+        // populate description view
+        if (step.getDescription().equals("")) {
+            stepDetailDescriptionTextView.setText(getResources()
+                    .getString(R.string.no_step_description_message));
+        } else {
+            stepDetailDescriptionTextView.setText(step.getDescription());
+        }
+        // populate the thumbnail view
+        Bitmap artwork = null;
+        if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
+            artwork = BitmapFactory.decodeResource(getResources(),R.drawable.recipestepplaceholder_black);
+        } else {
+            artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
+        }
+        stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
+
+        // set the video url for video playback
+        releasePlayer();
+        if (!(step.getVideoURL().equals(""))) {
+            initializePlayer(Uri.parse(step.getVideoURL()));
+        } else {
+            Log.v(LOG_TAG, "No video url available.");
+        }
+
+        // Enable/disable nav button when on the first/last step
+        if (mStepIndex == 0) {
+            prevStepButton.setEnabled(false);
+        } else if (mStepIndex == mSteps.length-1){
+            nextStepButton.setEnabled(false);
+        } else {
+            prevStepButton.setEnabled(true);
+            nextStepButton.setEnabled(true);
+        }
     }
 
     @Override
@@ -155,20 +174,6 @@ public class StepDetailFragment extends Fragment {
         super.onDestroy();
         releasePlayer();
     }
-
-    /*
-    @Override
-    public void onStop() {
-        super.onStop();
-        releasePlayer();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        releasePlayer();
-    }
-    */
 
     /**
      * Initialize ExoPlayer.
@@ -198,5 +203,15 @@ public class StepDetailFragment extends Fragment {
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
         }
+    }
+
+    public void prevButtonOnClick(View view){
+        mStepIndex = mStepIndex - 1;
+        updateStepDetails(mRecipeId, mStepIndex);
+    }
+
+    public void nextButtonOnClick(View view){
+        mStepIndex = mStepIndex + 1;
+        updateStepDetails(mRecipeId, mStepIndex);
     }
 }

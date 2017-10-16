@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 /**
  * Created by Manolo on 10/10/2017.
  */
 
 public class StepDetailActivity extends AppCompatActivity {
+
+    StepDetailFragment stepDetailFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,13 +26,21 @@ public class StepDetailActivity extends AppCompatActivity {
             setTitle(shortDescription);
         }
 
-        // Create the fragment for step details
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+        // Instantiate the fragment for step details
+        stepDetailFragment = new StepDetailFragment();
         // Use the fragment manager and transaction to add the fragment to the screen
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.container, stepDetailFragment)
                 .commit();
 
+    }
+
+    public void prevButtonOnClick(View view){
+        stepDetailFragment.prevButtonOnClick(view);
+    }
+
+    public void nextButtonOnClick(View view){
+        stepDetailFragment.nextButtonOnClick(view);
     }
 }
