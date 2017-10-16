@@ -22,15 +22,16 @@ public final class NetworkUtils {
         try {
             InputStream in = new java.net.URL(url).openStream();
             bitmap = BitmapFactory.decodeStream(in);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            Bitmap bitmap2 = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            return bitmap2;
         } catch (Exception e) {
-            Log.e("Error", e.getMessage());
+            Log.e("Error", "" + e.getMessage());
             e.printStackTrace();
+            return null;
         }
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        Bitmap bitmap2 = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        return bitmap2;
     }
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,10 +119,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
 
             Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
             int adapterPosition = getAdapterPosition();
+            Log.v("RecipeAdapter", "Adapter position: " + adapterPosition);
             mCursor.moveToPosition(adapterPosition);
-            int recipeId = mCursor.getInt(mCursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_ID));
+            int recipe_id = mCursor.getInt(mCursor.getColumnIndex(RecipeEntry._ID));
+            Log.v("RecipeAdapter", "Recipe _id: " + recipe_id);
             String recipeName = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME));
-            intent.putExtra("recipe_id", recipeId);
+            Log.v("RecipeAdapter", "Recipe name: " + recipeName);
+            intent.putExtra("recipe_id", recipe_id);
             intent.putExtra("name", recipeName);
             view.getContext().startActivity(intent);
         }

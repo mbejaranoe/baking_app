@@ -2,6 +2,7 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,14 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int VIEW_TYPE_STEPS = 1;
 
     // Member variables
+    private int mRecipe_id;
     public Ingredient[] mIngredients;
     public Step[] mSteps;
     private Context mContext;
 
     // Constructor
-    public RecipeDetailAdapter(Ingredient[] ingredients, Step[] steps, Context context){
+    public RecipeDetailAdapter(int recipe_id, Ingredient[] ingredients, Step[] steps, Context context){
+        mRecipe_id = recipe_id;
         mIngredients = ingredients;
         mSteps = steps;
         mContext = context;
@@ -63,8 +66,11 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case VIEW_TYPE_STEPS:
                 StepsViewHolder stepsViewHolder = (StepsViewHolder) holder;
-                stepsViewHolder.setStepsArrayToStepsViewHolder(mSteps, mIngredients.length);
-                StepsViewHolder.setStepsViewHolder(mContext, stepsViewHolder, mSteps[position - mIngredients.length]);
+                Log.v("RecipeDetailAdapter", "-onBindViewHolder, index: " + (position - mIngredients.length));
+                stepsViewHolder.setStepsViewHolder(mContext, stepsViewHolder,
+                        mSteps[position - mIngredients.length]);
+                stepsViewHolder.setRecipe_id(mRecipe_id);
+                stepsViewHolder.setNumIngred(mIngredients.length);
                 break;
         }
     }

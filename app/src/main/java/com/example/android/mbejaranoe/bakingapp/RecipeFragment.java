@@ -33,7 +33,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int RECIPE_LOADER_ID = 22;
 
-    public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry.COLUMN_RECIPE_ID,
+    public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry._ID,
             RecipeContract.RecipeEntry.COLUMN_NAME, RecipeContract.RecipeEntry.COLUMN_SERVINGS,
             RecipeContract.RecipeEntry.COLUMN_IMAGE_URL};
 

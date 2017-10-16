@@ -3,6 +3,7 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,8 +20,8 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     private ImageView stepThumbnailImageView;
     private TextView stepShortDescriptionTextView;
-    private static Step[] mSteps;
-    private int numIngredients;
+    private int numIngred;
+    private int recipe_id;
 
     public StepsViewHolder(View itemView) {
         super(itemView);
@@ -43,22 +44,27 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
         holder.stepShortDescriptionTextView.setText(step.getShortDescription());
     }
 
+    public void setRecipe_id(int id){
+        recipe_id = id;
+    }
+
+    public void setNumIngred(int num) {
+        numIngred = num;
+    }
+
     @Override
     public void onClick(View view) {
 
-        int stepIndex = getAdapterPosition() - numIngredients;
         Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
-        intent.putExtra("shortDescription", mSteps[stepIndex].getShortDescription());
-        intent.putExtra("description", mSteps[stepIndex].getDescription());
-        intent.putExtra("videoURL", mSteps[stepIndex].getVideoURL());
-        intent.putExtra("thumbnailURL", mSteps[stepIndex].getThumbnailURL());
+        // pass the recipe _id in order to query the content provider to obtain the json string with steps
+        intent.putExtra("_id", recipe_id);
+        Log.v("StepsViewHolder", "-onClick recipe_id: " + recipe_id);
+        // pass the step index in order to access the item in the Step[] and retrieve the correct info
+        // to populate the views
+        int stepIndex = getAdapterPosition() - numIngred;
+        intent.putExtra("stepIndex", stepIndex);
+        Log.v("StepsViewHolder", "-onClick step index: " + stepIndex);
+        intent.putExtra("shortDescription", stepShortDescriptionTextView.getText());
         view.getContext().startActivity(intent);
-
     }
-
-    public void setStepsArrayToStepsViewHolder(Step[] steps, int i){
-        mSteps = steps;
-        numIngredients = i;
-    }
-
 }

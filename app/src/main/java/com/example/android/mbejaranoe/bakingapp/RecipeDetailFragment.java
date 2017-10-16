@@ -37,6 +37,7 @@ public class RecipeDetailFragment extends Fragment {
     // Member variables
     public static Ingredient[] mIngredients;
     public static Step[] mSteps;
+    public static int mRecipe_ID;
 
     private RecyclerView mRecipeDetailRecyclerView;
     private RecipeDetailAdapter mRecipeDetailAdapter;
@@ -62,13 +63,13 @@ public class RecipeDetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
 
         if (intent.hasExtra("recipe_id")){
-            int recipeId = intent.getIntExtra("recipe_id", 0);
+            mRecipe_ID = intent.getIntExtra("recipe_id", 0);
 
             // Query the Content Provider
             Cursor cursorRecipe;
             String[] projection = DETAIL_RECIPE_PROJECTION;
-            String selection = RecipeEntry.COLUMN_RECIPE_ID + "=?";
-            String[] selectionArgs = new String[]{String.valueOf(recipeId)};
+            String selection = RecipeEntry._ID + "=?";
+            String[] selectionArgs = new String[]{String.valueOf(mRecipe_ID)};
 
             cursorRecipe = getContext().getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
                     projection,
@@ -121,7 +122,7 @@ public class RecipeDetailFragment extends Fragment {
         mRecipeDetailLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         mRecipeDetailRecyclerView.setLayoutManager(mRecipeDetailLayoutManager);
 
-        mRecipeDetailAdapter = new RecipeDetailAdapter(mIngredients, mSteps, getContext());
+        mRecipeDetailAdapter = new RecipeDetailAdapter(mRecipe_ID, mIngredients, mSteps, getContext());
         mRecipeDetailRecyclerView.setAdapter(mRecipeDetailAdapter);
 
         return rootView;
