@@ -37,10 +37,28 @@ public class StepDetailActivity extends AppCompatActivity {
     }
 
     public void prevButtonOnClick(View view){
-        stepDetailFragment.prevButtonOnClick(view);
+        //stepDetailFragment.prevButtonOnClick(view);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        StepDetailFragment newFragment = new StepDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt("stepIndex", stepDetailFragment.getStepIndex() - 1);
+        args.putInt("recipeId", stepDetailFragment.getRecipeId());
+        newFragment.setArguments(args);
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, newFragment)
+                .commit();
     }
 
     public void nextButtonOnClick(View view){
-        stepDetailFragment.nextButtonOnClick(view);
+        //stepDetailFragment.nextButtonOnClick(view);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        StepDetailFragment newFragment = new StepDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt("stepIndex", stepDetailFragment.getStepIndex() + 1);
+        args.putInt("recipeId", stepDetailFragment.getRecipeId());
+        newFragment.setArguments(args);
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, newFragment)
+                .commit();
     }
 }

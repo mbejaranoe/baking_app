@@ -59,11 +59,6 @@ public class StepDetailFragment extends Fragment {
     public StepDetailFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,11 +73,18 @@ public class StepDetailFragment extends Fragment {
         prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
         nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
 
-        // Get the intent and its extras
-        Intent intent = getActivity().getIntent();
-        if (intent.hasExtra("_id") && intent.hasExtra("stepIndex")) {
-            updateStepDetails(intent.getIntExtra("_id", RECIPE_ID_DEFAULT_VALUE),
-                intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE));
+        if (savedInstanceState == null) {
+            // Get the intent and its extras
+            Intent intent = getActivity().getIntent();
+            if (intent.hasExtra("_id") && intent.hasExtra("stepIndex")) {
+                updateStepDetails(intent.getIntExtra("_id", RECIPE_ID_DEFAULT_VALUE),
+                        intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE));
+            }
+        } else {
+            Bundle args = this.getArguments();
+            mStepIndex = args.getInt("stepIndex");
+            mRecipeId = args.getInt("recipeId");
+            updateStepDetails(mRecipeId, mStepIndex);
         }
 
         return rootView;
@@ -206,12 +208,51 @@ public class StepDetailFragment extends Fragment {
     }
 
     public void prevButtonOnClick(View view){
+        /*
         mStepIndex = mStepIndex - 1;
         updateStepDetails(mRecipeId, mStepIndex);
+        */
+        /*
+        StepDetailFragment newFragment = new StepDetailFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, newFragment)
+                .commit();
+                */
+
     }
 
     public void nextButtonOnClick(View view){
+        /*
         mStepIndex = mStepIndex + 1;
         updateStepDetails(mRecipeId, mStepIndex);
+        */
+        /*
+        StepDetailFragment newFragment = new StepDetailFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, newFragment)
+                .commit();
+                */
+
+    }
+
+    // Getter methods
+    public Step[] getStepsArray(){
+        return  mSteps;
+    }
+
+    public int getStepIndex(){
+        return mStepIndex;
+    }
+
+    public int getRecipeId(){
+        return mRecipeId;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("stepIndex", mStepIndex);
+        outState.putInt("recipeId", mRecipeId);
     }
 }
