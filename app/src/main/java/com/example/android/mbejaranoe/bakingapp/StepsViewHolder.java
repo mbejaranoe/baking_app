@@ -21,7 +21,7 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private ImageView stepThumbnailImageView;
     private TextView stepShortDescriptionTextView;
     private int numIngred;
-    private int recipe_id;
+    private int recipe_Id;
 
     public StepsViewHolder(View itemView) {
         super(itemView);
@@ -45,7 +45,7 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     public void setRecipe_id(int id){
-        recipe_id = id;
+        recipe_Id = id;
     }
 
     public void setNumIngred(int num) {
@@ -57,8 +57,8 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
         // pass the recipe _id in order to query the content provider to obtain the json string with steps
-        intent.putExtra("_id", recipe_id);
-        Log.v("StepsViewHolder", "-onClick recipe_id: " + recipe_id);
+        intent.putExtra("recipe_Id", recipe_Id);
+        Log.v("StepsViewHolder", "-onClick recipe_Id: " + recipe_Id);
         // pass the step index in order to access the item in the Step[] and retrieve the correct info
         // to populate the views
         int stepIndex = getAdapterPosition() - numIngred;

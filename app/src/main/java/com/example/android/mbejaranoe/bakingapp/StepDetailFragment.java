@@ -1,6 +1,5 @@
 package com.example.android.mbejaranoe.bakingapp;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
@@ -44,15 +44,14 @@ public class StepDetailFragment extends Fragment {
     private final String LOG_TAG = "StepDetailFragment";
 
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
+    private ImageView stepDetailVideoPlaceholderImageView;
     private SimpleExoPlayer mSimpleExoPlayer;
     private TextView stepDetailDescriptionTextView;
     private Button prevStepButton;
     private Button nextStepButton;
     private Step[] mSteps;
     private int mStepIndex;
-    private int mRecipeId;
-    private final int RECIPE_ID_DEFAULT_VALUE = -1;
-    private final int STEP_INDEX_DEFAULT_VALUE = -1;
+    private int mRecipe_Id;
     private Cursor mCursor;
 
     // Constructor
@@ -68,44 +67,33 @@ public class StepDetailFragment extends Fragment {
 
         stepDetailSimpleExoPlayerView = (SimpleExoPlayerView) rootView
                 .findViewById(R.id.step_detail_simple_exoplayer_view);
+        stepDetailVideoPlaceholderImageView = (ImageView) rootView
+                .findViewById(R.id.step_detail_video_placeholder_image_view);
         stepDetailDescriptionTextView = (TextView) rootView
                 .findViewById(R.id.step_detail_description_text_view);
         prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
         nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
 
-        if (savedInstanceState == null) {
-            // Get the intent and its extras
-            Intent intent = getActivity().getIntent();
-            if (intent.hasExtra("_id") && intent.hasExtra("stepIndex")) {
-                updateStepDetails(intent.getIntExtra("_id", RECIPE_ID_DEFAULT_VALUE),
-                        intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE));
-            }
-        } else {
-            Bundle args = this.getArguments();
-            mStepIndex = args.getInt("stepIndex");
-            mRecipeId = args.getInt("recipeId");
-            updateStepDetails(mRecipeId, mStepIndex);
-        }
+        Bundle args = getArguments();
+        mStepIndex = args.getInt("stepIndex");
+        mRecipe_Id = args.getInt("recipe_Id");
+
+        updateStepDetails();
 
         return rootView;
     }
 
-    public void updateStepDetails(int id, int index){
+    public void updateStepDetails(){
 
-        mRecipeId = id;
-        Log.v(LOG_TAG, " intent recipe_id: " + mRecipeId);
-        if (mRecipeId == RECIPE_ID_DEFAULT_VALUE) {
-            Log.v(LOG_TAG, "Error retrieving recipe_id from the intent. _id: " + mRecipeId);
-            return;
-        }
-        // query the content provider to get the recipe
+        // query the content provider using the recipe_Id to get the recipe row
         mCursor = getContext().getContentResolver().query(
                 RecipeEntry.CONTENT_URI,
                 null,
                 "_id=?",
-                new String[]{String.valueOf(mRecipeId)},
+                new String[]{String.valueOf(mRecipe_Id)},
                 null);
 
+        // get the steps string and parse it to get a Step[]
         if (mCursor.moveToFirst()){
             // get the json string with the steps details
             String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
@@ -125,17 +113,13 @@ public class StepDetailFragment extends Fragment {
                 }
             }
         }
-        // get the step index
-        mStepIndex = index;
-        Log.v(LOG_TAG, " intent step index: " + mStepIndex);
-        if (mStepIndex == STEP_INDEX_DEFAULT_VALUE){
-            Log.v(LOG_TAG, "Error retrieving step index from the intent. stepIndex: " + mStepIndex);
-            return;
-        }
-        // get the step
+
+        // get the appropriate step
         Step step = mSteps[mStepIndex];
+
         // set the title for the parent activity
         getActivity().setTitle(step.getShortDescription());
+
         // populate description view
         if (step.getDescription().equals("")) {
             stepDetailDescriptionTextView.setText(getResources()
@@ -143,6 +127,7 @@ public class StepDetailFragment extends Fragment {
         } else {
             stepDetailDescriptionTextView.setText(step.getDescription());
         }
+
         // populate the thumbnail view
         Bitmap artwork = null;
         if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
@@ -152,15 +137,20 @@ public class StepDetailFragment extends Fragment {
         }
         stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
 
-        // set the video url for video playback
+        // set the video url for video playback, or the imageview in case there is no video url
         releasePlayer();
         if (!(step.getVideoURL().equals(""))) {
+            stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+            stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
             initializePlayer(Uri.parse(step.getVideoURL()));
         } else {
+            stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+            stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
+            stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
             Log.v(LOG_TAG, "No video url available.");
         }
 
-        // Enable/disable nav button when on the first/last step
+        // enable/disable nav button when on the first/last step
         if (mStepIndex == 0) {
             prevStepButton.setEnabled(false);
         } else if (mStepIndex == mSteps.length-1){
@@ -205,54 +195,5 @@ public class StepDetailFragment extends Fragment {
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
         }
-    }
-
-    public void prevButtonOnClick(View view){
-        /*
-        mStepIndex = mStepIndex - 1;
-        updateStepDetails(mRecipeId, mStepIndex);
-        */
-        /*
-        StepDetailFragment newFragment = new StepDetailFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment)
-                .commit();
-                */
-
-    }
-
-    public void nextButtonOnClick(View view){
-        /*
-        mStepIndex = mStepIndex + 1;
-        updateStepDetails(mRecipeId, mStepIndex);
-        */
-        /*
-        StepDetailFragment newFragment = new StepDetailFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment)
-                .commit();
-                */
-
-    }
-
-    // Getter methods
-    public Step[] getStepsArray(){
-        return  mSteps;
-    }
-
-    public int getStepIndex(){
-        return mStepIndex;
-    }
-
-    public int getRecipeId(){
-        return mRecipeId;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("stepIndex", mStepIndex);
-        outState.putInt("recipeId", mRecipeId);
     }
 }
