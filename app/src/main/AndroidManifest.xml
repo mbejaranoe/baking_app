@@ -27,7 +27,8 @@
         <activity
             android:name=".RecipeDetailActivity"
             android:label="@string/title_activity_recipe_detail"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

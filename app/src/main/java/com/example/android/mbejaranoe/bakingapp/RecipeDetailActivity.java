@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
+    private String recipeName;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +23,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Intent intent = getIntent();
             if (intent != null && intent.hasExtra("name")) {
-                String recipeName = intent.getStringExtra("name");
+                recipeName = intent.getStringExtra("name");
                 setTitle(recipeName);
             }
 
@@ -32,6 +34,20 @@ public class RecipeDetailActivity extends AppCompatActivity {
             fragmentManager.beginTransaction()
                     .add(R.id.container, recipeDetailFragment)
                     .commit();
+        } else {
+            recipeName = savedInstanceState.getString("name");
+            setTitle(recipeName);
+
+            RecipeDetailFragment newDetailFragment = new RecipeDetailFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, newDetailFragment)
+                    .commit();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("name", recipeName);
     }
 }
