@@ -1,11 +1,13 @@
 package com.example.android.mbejaranoe.bakingapp;
 
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -117,47 +119,96 @@ public class StepDetailFragment extends Fragment {
         // get the appropriate step
         Step step = mSteps[mStepIndex];
 
-        // set the title for the parent activity
-        getActivity().setTitle(step.getShortDescription());
+        // get the screen orientation
+        Configuration configuration = getActivity().getResources().getConfiguration();
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
 
-        // populate description view
-        if (step.getDescription().equals("")) {
-            stepDetailDescriptionTextView.setText(getResources()
-                    .getString(R.string.no_step_description_message));
-        } else {
-            stepDetailDescriptionTextView.setText(step.getDescription());
-        }
+            /*
+            // show the action bar
+            if(getActivity().getActionBar() != null) {
+                getActivity().getActionBar().show();
+            }
+            */
 
-        // populate the thumbnail view
-        Bitmap artwork = null;
-        if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
-            artwork = BitmapFactory.decodeResource(getResources(),R.drawable.recipestepplaceholder_black);
-        } else {
-            artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
-        }
-        stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
+            // set the title for the parent activity
+            getActivity().setTitle(step.getShortDescription());
 
-        // set the video url for video playback, or the imageview in case there is no video url
-        releasePlayer();
-        if (!(step.getVideoURL().equals(""))) {
+            // populate description view
+            if (step.getDescription().equals("")) {
+                stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
+                stepDetailDescriptionTextView.setText(getResources()
+                        .getString(R.string.no_step_description_message));
+            } else {
+                stepDetailDescriptionTextView.setText(step.getDescription());
+            }
+
+            // populate the thumbnail view
+            Bitmap artwork = null;
+            if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
+                artwork = BitmapFactory.decodeResource(getResources(), R.drawable.recipestepplaceholder_black);
+            } else {
+                artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
+            }
             stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-            stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
-            initializePlayer(Uri.parse(step.getVideoURL()));
-        } else {
-            stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
-            stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
-            stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-            Log.v(LOG_TAG, "No video url available.");
-        }
+            stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
 
-        // enable/disable nav button when on the first/last step
-        if (mStepIndex == 0) {
-            prevStepButton.setEnabled(false);
-        } else if (mStepIndex == mSteps.length-1){
-            nextStepButton.setEnabled(false);
-        } else {
-            prevStepButton.setEnabled(true);
-            nextStepButton.setEnabled(true);
+            // set the video url for video playback, or the imageview in case there is no video url
+            releasePlayer();
+            if (!(step.getVideoURL().equals(""))) {
+                stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                initializePlayer(Uri.parse(step.getVideoURL()));
+            } else {
+                stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
+                stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
+                Log.v(LOG_TAG, "No video url available.");
+            }
+
+            // enable/disable nav button when on the first/last step
+            prevStepButton.setVisibility(View.VISIBLE);
+            nextStepButton.setVisibility(View.VISIBLE);
+            if (mStepIndex == 0) {
+                prevStepButton.setEnabled(false);
+            } else if (mStepIndex == mSteps.length - 1) {
+                nextStepButton.setEnabled(false);
+            } else {
+                prevStepButton.setEnabled(true);
+                nextStepButton.setEnabled(true);
+            }
+        } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // landscape mode
+
+            /*
+            // hide the action bar
+            if(getActivity().getActionBar() != null) {
+                getActivity().getActionBar().hide();
+            }
+            */
+
+            // hide all the views but exoplayer view and video image placeholder view
+            stepDetailDescriptionTextView.setVisibility(View.GONE);
+            prevStepButton.setVisibility(View.GONE);
+            nextStepButton.setVisibility(View.GONE);
+
+            // change the width and height of both exoplayer view and video image placeholder view
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)
+                    stepDetailSimpleExoPlayerView.getLayoutParams();
+            params.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
+            params.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
+            stepDetailSimpleExoPlayerView.setLayoutParams(params);
+            stepDetailVideoPlaceholderImageView.setLayoutParams(params);
+
+            // set the video url for video playback, or the imageview in case there is no video url
+            if (!(step.getVideoURL().equals(""))) {
+                stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                initializePlayer(Uri.parse(step.getVideoURL()));
+            } else {
+                stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
+                stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
+                Log.v(LOG_TAG, "No video url available.");
+            }
         }
     }
 

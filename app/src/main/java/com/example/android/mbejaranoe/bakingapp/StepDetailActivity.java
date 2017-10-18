@@ -1,6 +1,7 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -17,13 +18,21 @@ public class StepDetailActivity extends AppCompatActivity {
     int stepIndex;
     int recipe_Id;
 
+    public final String LOG_TAG = "StepDetailActivity";
+
     private final int STEP_INDEX_DEFAULT_VALUE = -1;
     private final int RECIPE_ID_DEFAULT_VALUE = -1;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getSupportActionBar().hide();
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getSupportActionBar().show();
+        }
+
         setContentView(R.layout.activity_step_detail);
 
         // only create a new fragment when it is not previously created
