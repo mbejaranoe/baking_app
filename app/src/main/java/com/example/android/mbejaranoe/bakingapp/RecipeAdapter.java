@@ -25,8 +25,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     // Cursor to store the recipes data
     private Cursor mCursor;
     private Context mContext;
-    // Index of the images placeholder
-    private int indexImagePlaceHolder;
 
     // Constructor
     public RecipeAdapter(){
@@ -36,7 +34,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     @Override
     public RecipeAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        indexImagePlaceHolder = 0;
         int layoutId = R.layout.list_item_recipe;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
@@ -57,7 +54,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         int servingsIndex = mCursor.getColumnIndex(RecipeEntry.COLUMN_SERVINGS);
 
         if (mCursor.getString(imageUrlIndex).length() == 0) { // there is no image
-            Picasso.with(mContext).load(getRecipeImagePlaceholder(indexImagePlaceHolder)).into(holder.recipeImageView);
+            Picasso.with(mContext).load(R.drawable.recipestepplaceholder_blue).into(holder.recipeImageView);
         } else { // there is an image
             Picasso.with(mContext).load(mCursor.getString(imageUrlIndex)).into(holder.recipeImageView);
         }
@@ -74,23 +71,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     void swapCursor(Cursor newCursor){
         mCursor = newCursor;
         notifyDataSetChanged();
-    }
-
-    // Helper method to get an image placeholder in case there is an error with the image
-    // in the recipes Json object
-    public int getRecipeImagePlaceholder(int index){
-        int[] recipeImagePlaceholders = {
-                R.drawable.generic01,
-                R.drawable.generic02,
-                R.drawable.generic03,
-                R.drawable.generic04
-        };
-        if (indexImagePlaceHolder == 3) {
-            indexImagePlaceHolder = 0;
-        } else {
-            indexImagePlaceHolder++;
-        }
-        return recipeImagePlaceholders[index];
     }
 
     // ViewHolder class

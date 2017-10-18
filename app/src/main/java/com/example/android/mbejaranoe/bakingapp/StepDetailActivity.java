@@ -26,39 +26,42 @@ public class StepDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
 
-        // get the shortDescription from the intent to title the activity
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("shortDescription")) {
-            String shortDescription = intent.getStringExtra("shortDescription");
-            setTitle(shortDescription);
+        // only create a new fragment when it is not previously created
+        if (savedInstanceState == null) {
+            // get the shortDescription from the intent to title the activity
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra("shortDescription")) {
+                String shortDescription = intent.getStringExtra("shortDescription");
+                setTitle(shortDescription);
+            }
+
+            // get the step index from the intent
+            if (intent != null && intent.hasExtra("stepIndex")) {
+                stepIndex = intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE);
+            }
+
+            // get the recipe _id from the intent
+            if (intent != null && intent.hasExtra("recipe_Id")) {
+                recipe_Id = intent.getIntExtra("recipe_Id", RECIPE_ID_DEFAULT_VALUE);
+            }
+
+            // Instantiate the fragment for step details
+            stepDetailFragment = new StepDetailFragment();
+
+            // Use the fragment manager and transaction to add the fragment to the screen
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            // Add the step index and recipe _id to the bundle, to pass it to the fragment
+            Bundle args = new Bundle();
+            args.putInt("stepIndex", stepIndex);
+            args.putInt("recipe_Id", recipe_Id);
+            stepDetailFragment.setArguments(args);
+
+            // call the fragment manager to add the fragment
+            fragmentManager.beginTransaction()
+                    .add(R.id.container, stepDetailFragment)
+                    .commit();
         }
-
-        // get the step index from the intent
-        if (intent != null && intent.hasExtra("stepIndex")) {
-            stepIndex = intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE);
-        }
-
-        // get the recipe _id from the intent
-        if (intent != null && intent.hasExtra("recipe_Id")) {
-            recipe_Id = intent.getIntExtra("recipe_Id", RECIPE_ID_DEFAULT_VALUE);
-        }
-
-        // Instantiate the fragment for step details
-        stepDetailFragment = new StepDetailFragment();
-
-        // Use the fragment manager and transaction to add the fragment to the screen
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        // Add the step index and recipe _id to the bundle, to pass it to the fragment
-        Bundle args = new Bundle();
-        args.putInt("stepIndex", stepIndex);
-        args.putInt("recipe_Id", recipe_Id);
-        stepDetailFragment.setArguments(args);
-
-        // call the fragment manager to add the fragment
-        fragmentManager.beginTransaction()
-                .add(R.id.container, stepDetailFragment)
-                .commit();
 
     }
 

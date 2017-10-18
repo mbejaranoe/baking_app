@@ -5,7 +5,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="300dp"
     card_view:cardUseCompatPadding="true"
     card_view:cardCornerRadius="6dp"
     card_view:cardElevation="10dp"
@@ -42,6 +42,7 @@
             android:id="@+id/recipe_servings_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             />
 
     </LinearLayout>

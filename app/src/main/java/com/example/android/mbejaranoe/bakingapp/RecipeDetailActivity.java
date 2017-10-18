@@ -17,18 +17,21 @@ public class RecipeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("name")) {
-            String recipeName = intent.getStringExtra("name");
-            setTitle(recipeName);
-        }
+        // only create a new fragment when it is not previously created
+        if (savedInstanceState == null) {
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra("name")) {
+                String recipeName = intent.getStringExtra("name");
+                setTitle(recipeName);
+            }
 
-        // Create the fragment for recipe details
-        RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
-        // Use the fragment manager and transaction to add the fragment to the screen
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .add(R.id.container, recipeDetailFragment)
-                .commit();
+            // Create the fragment for recipe details
+            RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
+            // Use the fragment manager and transaction to add the fragment to the screen
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .add(R.id.container, recipeDetailFragment)
+                    .commit();
+        }
     }
 }
