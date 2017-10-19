@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +23,18 @@ import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
 import com.example.android.mbejaranoe.bakingapp.utilities.NetworkUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -41,9 +48,9 @@ import org.json.JSONException;
  * Fragment to show the step details
  */
 
-public class StepDetailFragment extends Fragment {
+public class StepDetailFragment extends Fragment implements ExoPlayer.EventListener{
 
-    private final String LOG_TAG = "StepDetailFragment";
+    private final String TAG = StepsViewHolder.class.getSimpleName();
 
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private ImageView stepDetailVideoPlaceholderImageView;
@@ -55,6 +62,9 @@ public class StepDetailFragment extends Fragment {
     private int mStepIndex;
     private int mRecipe_Id;
     private Cursor mCursor;
+    private MediaSessionCompat mMediaSession;
+    private PlaybackStateCompat.Builder mStateBuilder;
+
 
     // Constructor
     public StepDetailFragment() {
@@ -79,7 +89,7 @@ public class StepDetailFragment extends Fragment {
         Bundle args = getArguments();
         mStepIndex = args.getInt("stepIndex");
         mRecipe_Id = args.getInt("recipe_Id");
-        Log.v(LOG_TAG, "stepIndex: " + mStepIndex + ", recipe_Id: " + mRecipe_Id);
+        Log.v(TAG, "stepIndex: " + mStepIndex + ", recipe_Id: " + mRecipe_Id);
 
         updateStepDetails();
 
@@ -99,7 +109,7 @@ public class StepDetailFragment extends Fragment {
         // get the steps string and parse it to get a Step[]
         if (mCursor.moveToFirst()){
 
-            Log.v(LOG_TAG, "Cursor.moveToFirst = TRUE");
+            Log.v(TAG, "Cursor.moveToFirst = TRUE");
 
             // get the json string with the steps details
             String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
@@ -107,30 +117,30 @@ public class StepDetailFragment extends Fragment {
             try {
                 stepsJsonArray = new JSONArray(stringSteps);
             } catch (JSONException e){
-                Log.e(LOG_TAG, "Error parsing steps JSONArray: " + stringSteps);
+                Log.e(TAG, "Error parsing steps JSONArray: " + stringSteps);
             }
 
-            Log.v(LOG_TAG, "Number of steps after parsing: " + stepsJsonArray.length());
+            Log.v(TAG, "Number of steps after parsing: " + stepsJsonArray.length());
 
             // parse the json string into a Step[]
             mSteps = new Step[stepsJsonArray.length()];
 
-            Log.v(LOG_TAG, "mSteps array length: " + mSteps.length);
+            Log.v(TAG, "mSteps array length: " + mSteps.length);
 
             for (int i = 0; i < stepsJsonArray.length(); i++){
                 try {
                     mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
-                    Log.v(LOG_TAG, "Step[" + i + "] creation successful");
+                    Log.v(TAG, "Step[" + i + "] creation successful");
                 } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Error parsing JSONObject step.");
+                    Log.e(TAG, "Error parsing JSONObject step.");
                 }
             }
         }
 
         if (mSteps == null) {
-            Log.v(LOG_TAG, "mSteps array is NULL");
+            Log.v(TAG, "mSteps array is NULL");
         } else {
-            Log.v(LOG_TAG, "mSteps array is NOT NULL");
+            Log.v(TAG, "mSteps array is NOT NULL");
         }
         // get the appropriate step
         Step step = mSteps[mStepIndex];
@@ -161,6 +171,9 @@ public class StepDetailFragment extends Fragment {
             stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
             stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
 
+            // Initialize the Media Session
+            initializeMediaSession();
+
             // set the video url for video playback, or the imageview in case there is no video url
             releasePlayer();
             if (!(step.getVideoURL().equals(""))) {
@@ -171,7 +184,7 @@ public class StepDetailFragment extends Fragment {
                 stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                Log.v(LOG_TAG, "No video url available.");
+                Log.v(TAG, "No video url available.");
             }
 
             // enable/disable nav button when on the first/last step
@@ -204,13 +217,14 @@ public class StepDetailFragment extends Fragment {
             if (!(step.getVideoURL().equals(""))) {
                 stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                initializeMediaSession();
                 initializePlayer(Uri.parse(step.getVideoURL()));
             } else {
                 stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
                 stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                Log.v(LOG_TAG, "No video url available.");
+                Log.v(TAG, "No video url available.");
             }
         }
         mCursor.close();
@@ -220,6 +234,7 @@ public class StepDetailFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+        mMediaSession.setActive(false);
     }
 
     /**
@@ -232,6 +247,7 @@ public class StepDetailFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             stepDetailSimpleExoPlayerView.setPlayer(mSimpleExoPlayer);
+            mSimpleExoPlayer.addListener(this);
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getContext(), "CookMe");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -250,5 +266,96 @@ public class StepDetailFragment extends Fragment {
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
         }
+    }
+
+    private void initializeMediaSession(){
+
+        // Create a MediaSessionCompat
+        mMediaSession = new MediaSessionCompat(getActivity(), TAG);
+
+        // Enable callbacks from MediaButtons and TransportControls.
+        mMediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        // Do not let MediaButtons restart the player when the app is not visible.
+        mMediaSession.setMediaButtonReceiver(null);
+
+        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player.
+        mStateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+
+        // MySessionCallback has methods that handle callbacks from a media controller.
+        mMediaSession.setCallback(new MySessionCallback());
+
+        // Start the Media Session since the activity is active.
+        mMediaSession.setActive(true);
+        
+    }
+
+    /**
+     * Media Session Callbacks, where all external clients control the player.
+     */
+    private class MySessionCallback extends MediaSessionCompat.Callback {
+
+        @Override
+        public void onPlay() {
+            mSimpleExoPlayer.setPlayWhenReady(true);
+        }
+
+        @Override
+        public void onPause() {
+            mSimpleExoPlayer.setPlayWhenReady(false);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            mSimpleExoPlayer.seekTo(0);
+        }
+    }
+
+    // ExoPlayer.EventListener required methods
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+        if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                    mSimpleExoPlayer.getCurrentPosition(), 1f);
+        } else if((playbackState == ExoPlayer.STATE_READY)){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+                    mSimpleExoPlayer.getCurrentPosition(), 1f);
+        }
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+    }
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+
     }
 }
