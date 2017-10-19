@@ -79,6 +79,7 @@ public class StepDetailFragment extends Fragment {
         Bundle args = getArguments();
         mStepIndex = args.getInt("stepIndex");
         mRecipe_Id = args.getInt("recipe_Id");
+        Log.v(LOG_TAG, "stepIndex: " + mStepIndex + ", recipe_Id: " + mRecipe_Id);
 
         updateStepDetails();
 
@@ -97,6 +98,9 @@ public class StepDetailFragment extends Fragment {
 
         // get the steps string and parse it to get a Step[]
         if (mCursor.moveToFirst()){
+
+            Log.v(LOG_TAG, "Cursor.moveToFirst = TRUE");
+
             // get the json string with the steps details
             String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
             JSONArray stepsJsonArray = null;
@@ -105,30 +109,35 @@ public class StepDetailFragment extends Fragment {
             } catch (JSONException e){
                 Log.e(LOG_TAG, "Error parsing steps JSONArray: " + stringSteps);
             }
+
+            Log.v(LOG_TAG, "Number of steps after parsing: " + stepsJsonArray.length());
+
             // parse the json string into a Step[]
             mSteps = new Step[stepsJsonArray.length()];
+
+            Log.v(LOG_TAG, "mSteps array length: " + mSteps.length);
+
             for (int i = 0; i < stepsJsonArray.length(); i++){
                 try {
                     mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
+                    Log.v(LOG_TAG, "Step[" + i + "] creation successful");
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, "Error parsing JSONObject step.");
                 }
             }
         }
 
+        if (mSteps == null) {
+            Log.v(LOG_TAG, "mSteps array is NULL");
+        } else {
+            Log.v(LOG_TAG, "mSteps array is NOT NULL");
+        }
         // get the appropriate step
         Step step = mSteps[mStepIndex];
 
         // get the screen orientation
         Configuration configuration = getActivity().getResources().getConfiguration();
         if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
-
-            /*
-            // show the action bar
-            if(getActivity().getActionBar() != null) {
-                getActivity().getActionBar().show();
-            }
-            */
 
             // set the title for the parent activity
             getActivity().setTitle(step.getShortDescription());
@@ -178,13 +187,6 @@ public class StepDetailFragment extends Fragment {
             }
         } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // landscape mode
 
-            /*
-            // hide the action bar
-            if(getActivity().getActionBar() != null) {
-                getActivity().getActionBar().hide();
-            }
-            */
-
             // hide all the views but exoplayer view and video image placeholder view
             stepDetailDescriptionTextView.setVisibility(View.GONE);
             prevStepButton.setVisibility(View.GONE);
@@ -205,11 +207,13 @@ public class StepDetailFragment extends Fragment {
                 initializePlayer(Uri.parse(step.getVideoURL()));
             } else {
                 stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
                 Log.v(LOG_TAG, "No video url available.");
             }
         }
+        mCursor.close();
     }
 
     @Override
