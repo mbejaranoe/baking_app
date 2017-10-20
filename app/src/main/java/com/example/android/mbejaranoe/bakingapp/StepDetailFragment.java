@@ -51,7 +51,7 @@ import org.json.JSONException;
 
 public class StepDetailFragment extends Fragment implements ExoPlayer.EventListener{
 
-    private final String TAG = StepsViewHolder.class.getSimpleName();
+    private final String TAG = StepDetailFragment.class.getSimpleName();
 
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private ImageView stepDetailVideoPlaceholderImageView;

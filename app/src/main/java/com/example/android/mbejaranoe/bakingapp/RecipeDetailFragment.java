@@ -27,7 +27,7 @@ import org.json.JSONException;
 
 public class RecipeDetailFragment extends Fragment {
 
-    private final String LOG_TAG = "RecipeDetailFragment";
+    private final String LOG_TAG = RecipeDetailFragment.class.getSimpleName();
 
     public static final String[] DETAIL_RECIPE_PROJECTION = {
             RecipeEntry.COLUMN_INGREDIENTS,

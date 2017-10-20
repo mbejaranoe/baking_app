@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -32,6 +33,8 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private RecyclerView.LayoutManager mRecipeLayoutManager;
 
     private static final int RECIPE_LOADER_ID = 22;
+
+    private static final String BUNDLE_RECYCLER_LAYOUT = "RecipeFragment.recycler.layout";
 
     public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry._ID,
             RecipeContract.RecipeEntry.COLUMN_NAME, RecipeContract.RecipeEntry.COLUMN_SERVINGS,
@@ -92,6 +95,23 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         super.onResume();
         LoaderManager loaderManager = this.getLoaderManager();
         loaderManager.restartLoader(RECIPE_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if(savedInstanceState != null)
+        {
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            mRecipeRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mRecipeRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
