@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
 import com.example.android.mbejaranoe.bakingapp.utilities.NetworkUtils;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -64,6 +65,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private Cursor mCursor;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private boolean shouldAutoPlay;
+    private int resumeWindow;
+    private long resumePosition;
 
 
     // Constructor
@@ -90,6 +94,14 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mStepIndex = args.getInt("stepIndex");
         mRecipe_Id = args.getInt("recipe_Id");
         Log.v(TAG, "stepIndex: " + mStepIndex + ", recipe_Id: " + mRecipe_Id);
+
+        if (savedInstanceState == null){
+            shouldAutoPlay = false;
+        } else {
+            shouldAutoPlay = true;
+        }
+
+        clearResumePosition();
 
         updateStepDetails();
 
@@ -252,8 +264,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             String userAgent = Util.getUserAgent(getContext(), "CookMe");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
-            mSimpleExoPlayer.prepare(mediaSource);
-            mSimpleExoPlayer.setPlayWhenReady(false);
+            boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
+            if (haveResumePosition) {
+                mSimpleExoPlayer.seekTo(resumeWindow, resumePosition);
+            }
+            mSimpleExoPlayer.prepare(mediaSource, !haveResumePosition, false);
+            mSimpleExoPlayer.setPlayWhenReady(shouldAutoPlay);
         }
     }
 
@@ -262,6 +278,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
      */
     private void releasePlayer() {
         if (mSimpleExoPlayer != null) {
+            shouldAutoPlay = mSimpleExoPlayer.getPlayWhenReady();
+            updateResumePosition();
             mSimpleExoPlayer.stop();
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
@@ -357,5 +375,15 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @Override
     public void onPositionDiscontinuity() {
 
+    }
+
+    private void updateResumePosition() {
+        resumeWindow = mSimpleExoPlayer.getCurrentWindowIndex();
+        resumePosition = Math.max(0, mSimpleExoPlayer.getCurrentPosition());
+    }
+
+    private void clearResumePosition() {
+        resumeWindow = C.INDEX_UNSET;
+        resumePosition = C.TIME_UNSET;
     }
 }
