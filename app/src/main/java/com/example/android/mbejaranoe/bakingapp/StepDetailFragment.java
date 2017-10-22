@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +23,6 @@ import android.widget.TextView;
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
 import com.example.android.mbejaranoe.bakingapp.utilities.NetworkUtils;
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -53,10 +53,17 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
     private final String TAG = StepDetailFragment.class.getSimpleName();
 
+    private final String STEP_INDEX_KEY = "stepIndex";
+    private final String RECIPE_ID_KEY = "recipe_Id";
+    private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
+    private final String RESUME_POSITION_KEY = "resumePosition";
+
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private ImageView stepDetailVideoPlaceholderImageView;
     private SimpleExoPlayer mSimpleExoPlayer;
     private TextView stepDetailDescriptionTextView;
+    private TextView exoPositionTextView;
+    private TextView exoDurationTextView;
     private Button prevStepButton;
     private Button nextStepButton;
     private Step[] mSteps;
@@ -66,9 +73,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private boolean shouldAutoPlay;
-    private int resumeWindow;
     private long resumePosition;
-
 
     // Constructor
     public StepDetailFragment() {
@@ -87,21 +92,23 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 .findViewById(R.id.step_detail_video_placeholder_image_view);
         stepDetailDescriptionTextView = (TextView) rootView
                 .findViewById(R.id.step_detail_description_text_view);
+        exoPositionTextView = (TextView) rootView.findViewById(R.id.exo_position);
+        exoDurationTextView = (TextView) rootView.findViewById(R.id.exo_duration);
         prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
         nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
 
-        Bundle args = getArguments();
-        mStepIndex = args.getInt("stepIndex");
-        mRecipe_Id = args.getInt("recipe_Id");
-        Log.v(TAG, "stepIndex: " + mStepIndex + ", recipe_Id: " + mRecipe_Id);
-
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
+            Bundle args = getArguments();
+            mStepIndex = args.getInt(STEP_INDEX_KEY);
+            mRecipe_Id = args.getInt(RECIPE_ID_KEY);
             shouldAutoPlay = false;
+            resumePosition = 0;
         } else {
-            shouldAutoPlay = true;
+            mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
+            mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
+            shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
+            resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
         }
-
-        clearResumePosition();
 
         updateStepDetails();
 
@@ -121,7 +128,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         // get the steps string and parse it to get a Step[]
         if (mCursor.moveToFirst()){
 
-            Log.v(TAG, "Cursor.moveToFirst = TRUE");
+            Log.v(TAG, "updateStepDetails - Cursor.moveToFirst = TRUE");
 
             // get the json string with the steps details
             String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
@@ -129,30 +136,30 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             try {
                 stepsJsonArray = new JSONArray(stringSteps);
             } catch (JSONException e){
-                Log.e(TAG, "Error parsing steps JSONArray: " + stringSteps);
+                Log.e(TAG, "updateStepDetails - Error parsing steps JSONArray: " + stringSteps);
             }
 
-            Log.v(TAG, "Number of steps after parsing: " + stepsJsonArray.length());
+            Log.v(TAG, "updateStepDetails - Number of steps after parsing: " + stepsJsonArray.length());
 
             // parse the json string into a Step[]
             mSteps = new Step[stepsJsonArray.length()];
 
-            Log.v(TAG, "mSteps array length: " + mSteps.length);
+            Log.v(TAG, "updateStepDetails - mSteps array length: " + mSteps.length);
 
             for (int i = 0; i < stepsJsonArray.length(); i++){
                 try {
                     mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
-                    Log.v(TAG, "Step[" + i + "] creation successful");
+                    Log.v(TAG, "updateStepDetails - Step[" + i + "] creation successful");
                 } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing JSONObject step.");
+                    Log.e(TAG, "updateStepDetails - Error parsing JSONObject step.");
                 }
             }
         }
 
         if (mSteps == null) {
-            Log.v(TAG, "mSteps array is NULL");
+            Log.v(TAG, "updateStepDetails - mSteps array is NULL");
         } else {
-            Log.v(TAG, "mSteps array is NOT NULL");
+            Log.v(TAG, "updateStepDetails - mSteps array is NOT NULL");
         }
         // get the appropriate step
         Step step = mSteps[mStepIndex];
@@ -227,6 +234,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
             // set the video url for video playback, or the imageview in case there is no video url
             if (!(step.getVideoURL().equals(""))) {
+                int color = Color.WHITE;
+                exoPositionTextView.setTextColor(color);
+                exoDurationTextView.setTextColor(color);
                 stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
                 initializeMediaSession();
@@ -246,7 +256,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
-        mMediaSession.setActive(false);
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+        }
     }
 
     /**
@@ -264,12 +276,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             String userAgent = Util.getUserAgent(getContext(), "CookMe");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
-            boolean haveResumePosition = resumeWindow != C.INDEX_UNSET;
-            if (haveResumePosition) {
-                mSimpleExoPlayer.seekTo(resumeWindow, resumePosition);
-            }
-            mSimpleExoPlayer.prepare(mediaSource, !haveResumePosition, false);
+            mSimpleExoPlayer.prepare(mediaSource);
             mSimpleExoPlayer.setPlayWhenReady(shouldAutoPlay);
+            mSimpleExoPlayer.seekTo(resumePosition);
         }
     }
 
@@ -278,14 +287,15 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
      */
     private void releasePlayer() {
         if (mSimpleExoPlayer != null) {
-            shouldAutoPlay = mSimpleExoPlayer.getPlayWhenReady();
-            updateResumePosition();
             mSimpleExoPlayer.stop();
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
         }
     }
 
+    /**
+     * Initialize MediaSession.
+     */
     private void initializeMediaSession(){
 
         // Create a MediaSessionCompat
@@ -377,13 +387,26 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
     }
 
-    private void updateResumePosition() {
-        resumeWindow = mSimpleExoPlayer.getCurrentWindowIndex();
-        resumePosition = Math.max(0, mSimpleExoPlayer.getCurrentPosition());
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(STEP_INDEX_KEY, mStepIndex);
+        outState.putInt(RECIPE_ID_KEY, mRecipe_Id);
+        if (mSimpleExoPlayer != null) {
+            shouldAutoPlay = mSimpleExoPlayer.getPlayWhenReady();
+            resumePosition = mSimpleExoPlayer.getCurrentPosition();
+        } else {
+            shouldAutoPlay = false;
+            resumePosition = 0;
+        }
+        outState.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
+        outState.putLong(RESUME_POSITION_KEY, resumePosition);
     }
 
-    private void clearResumePosition() {
-        resumeWindow = C.INDEX_UNSET;
-        resumePosition = C.TIME_UNSET;
+    public void setStepIndex(int index){
+        mStepIndex = index;
+
+        updateStepDetails();
     }
 }

@@ -19,7 +19,14 @@ public class StepDetailActivity extends AppCompatActivity {
     int recipe_Id;
     String shortDescription;
 
-    public final String LOG_TAG = "StepDetailActivity";
+    public final String LOG_TAG = StepDetailActivity.class.getSimpleName();
+
+    private final String SHORT_DESCRIPTION_KEY = "shortDescription";
+    private final String STEP_INDEX_KEY = "stepIndex";
+    private final String RECIPE_ID_KEY = "recipe_Id";
+    private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
+    private final String RESUME_POSITION_KEY = "resumePosition";
+    private final String FRAGMENT_TAG = "myFragment";
 
     private final int STEP_INDEX_DEFAULT_VALUE = -1;
     private final int RECIPE_ID_DEFAULT_VALUE = -1;
@@ -40,19 +47,19 @@ public class StepDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // get the shortDescription from the intent to title the activity
             Intent intent = getIntent();
-            if (intent != null && intent.hasExtra("shortDescription")) {
-                shortDescription = intent.getStringExtra("shortDescription");
+            if (intent != null && intent.hasExtra(SHORT_DESCRIPTION_KEY)) {
+                shortDescription = intent.getStringExtra(SHORT_DESCRIPTION_KEY);
                 setTitle(shortDescription);
             }
 
             // get the step index from the intent
-            if (intent != null && intent.hasExtra("stepIndex")) {
-                stepIndex = intent.getIntExtra("stepIndex", STEP_INDEX_DEFAULT_VALUE);
+            if (intent != null && intent.hasExtra(STEP_INDEX_KEY)) {
+                stepIndex = intent.getIntExtra(STEP_INDEX_KEY, STEP_INDEX_DEFAULT_VALUE);
             }
 
             // get the recipe _id from the intent
-            if (intent != null && intent.hasExtra("recipe_Id")) {
-                recipe_Id = intent.getIntExtra("recipe_Id", RECIPE_ID_DEFAULT_VALUE);
+            if (intent != null && intent.hasExtra(RECIPE_ID_KEY)) {
+                recipe_Id = intent.getIntExtra(RECIPE_ID_KEY, RECIPE_ID_DEFAULT_VALUE);
             }
 
             // Instantiate the fragment for step details
@@ -63,37 +70,13 @@ public class StepDetailActivity extends AppCompatActivity {
 
             // Add the step index and recipe _id to the bundle, to pass it to the fragment
             Bundle args = new Bundle();
-            args.putInt("stepIndex", stepIndex);
-            args.putInt("recipe_Id", recipe_Id);
+            args.putInt(STEP_INDEX_KEY, stepIndex);
+            args.putInt(RECIPE_ID_KEY, recipe_Id);
             stepDetailFragment.setArguments(args);
 
             // call the fragment manager to add the fragment
             fragmentManager.beginTransaction()
-                    .add(R.id.container, stepDetailFragment)
-                    .commit();
-        } else {
-            // get the shortDescription from savedInstanceState
-            shortDescription = savedInstanceState.getString("shortDescription");
-
-            // get the step index from savedInstanceState
-            stepIndex = savedInstanceState.getInt("stepIndex");
-
-            // get the recipe _id from the savedInstanceState
-            recipe_Id = savedInstanceState.getInt("recipe_Id");
-
-            // create a new fragment to replace the old one
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            StepDetailFragment newFragment = new StepDetailFragment();
-
-            // Add the step index and recipe _id to the bundle, to pass it to the new fragment
-            Bundle args = new Bundle();
-            args.putInt("stepIndex", stepIndex);
-            args.putInt("recipe_Id", recipe_Id);
-            newFragment.setArguments(args);
-
-            // call the fragment manager to replace the old fragment with the new one
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, newFragment)
+                    .add(R.id.container, stepDetailFragment, FRAGMENT_TAG)
                     .commit();
         }
     }
@@ -103,49 +86,57 @@ public class StepDetailActivity extends AppCompatActivity {
         // decrement the step index
         stepIndex = stepIndex - 1;
 
+        stepDetailFragment.setStepIndex(stepIndex);
+        /*
         // create a new fragment to replace the old one
         FragmentManager fragmentManager = getSupportFragmentManager();
         StepDetailFragment newFragment = new StepDetailFragment();
 
         // Add the new step index and recipe _id to the bundle, to pass it to the new fragment
         Bundle args = new Bundle();
-        args.putInt("stepIndex", stepIndex);
-        args.putInt("recipe_Id", recipe_Id);
+        args.putInt(STEP_INDEX_KEY, stepIndex);
+        args.putInt(RECIPE_ID_KEY, recipe_Id);
         newFragment.setArguments(args);
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
                 .replace(R.id.container, newFragment)
                 .commit();
+        */
     }
 
     public void nextButtonOnClick(View view){
 
         // increment the step index
         stepIndex = stepIndex + 1;
-        FragmentManager fragmentManager = getSupportFragmentManager();
 
+        stepDetailFragment.setStepIndex(stepIndex);
+
+        /*
         // create a new fragment to replace the old one
+        FragmentManager fragmentManager = getSupportFragmentManager();
         StepDetailFragment newFragment = new StepDetailFragment();
 
         // Add the new step index and recipe _id to the bundle, to pass it to the new fragment
         Bundle args = new Bundle();
-        args.putInt("stepIndex", stepIndex);
-        args.putInt("recipe_Id", recipe_Id);
+        args.putInt(STEP_INDEX_KEY, stepIndex);
+        args.putInt(RECIPE_ID_KEY, recipe_Id);
         newFragment.setArguments(args);
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
                 .replace(R.id.container, newFragment)
                 .commit();
+                */
     }
 
+    /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString("shortDescription", shortDescription);
-        outState.putInt("stepIndex", stepIndex);
-        outState.putInt("recipe_Id", recipe_Id);
+        outState.putInt(STEP_INDEX_KEY, stepIndex);
+        outState.putInt(RECIPE_ID_KEY, recipe_Id);
     }
+    */
 }
