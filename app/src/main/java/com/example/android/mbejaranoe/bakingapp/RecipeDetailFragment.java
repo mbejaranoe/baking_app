@@ -29,6 +29,8 @@ public class RecipeDetailFragment extends Fragment {
 
     private final String LOG_TAG = RecipeDetailFragment.class.getSimpleName();
 
+    private final String RECIPE_ID_KEY = "recipe_Id";
+
     public static final String[] DETAIL_RECIPE_PROJECTION = {
             RecipeEntry.COLUMN_INGREDIENTS,
             RecipeEntry.COLUMN_STEPS
@@ -59,64 +61,19 @@ public class RecipeDetailFragment extends Fragment {
         // Inflate the Recipe detail fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
 
-        // Get the intent and its extras in order to get the recipe ingredients and steps
-        Intent intent = getActivity().getIntent();
-
-        if (intent.hasExtra("recipe_id")){
-            mRecipe_ID = intent.getIntExtra("recipe_id", 0);
-
-            // Query the Content Provider
-            Cursor cursorRecipe;
-            String[] projection = DETAIL_RECIPE_PROJECTION;
-            String selection = RecipeEntry._ID + "=?";
-            String[] selectionArgs = new String[]{String.valueOf(mRecipe_ID)};
-
-            cursorRecipe = getContext().getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null);
-
-            cursorRecipe.moveToFirst();
-
-            // Get the ingredients in String format, as it was stored in the Content Provider
-            String ingredientsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_INGREDIENTS));
-            // Parse the String to get the ingredients into an array
-            JSONArray ingredientsJsonArray = null;
-            try {
-                ingredientsJsonArray = new JSONArray(ingredientsString);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+        if (savedInstanceState == null) {
+            // Get the intent and its extras in order to get the recipe ingredients and steps
+            Intent intent = getActivity().getIntent();
+            if (intent.hasExtra(RECIPE_ID_KEY)) {
+                mRecipe_ID = intent.getIntExtra(RECIPE_ID_KEY, 0);
             }
-            mIngredients = new Ingredient[ingredientsJsonArray.length()];
-            for (int i = 0; i < ingredientsJsonArray.length(); i++){
-                try {
-                    mIngredients[i] = new Ingredient(ingredientsJsonArray.getJSONObject(i));
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
-                }
-            }
-            Log.v(LOG_TAG, "Retrieved " + mIngredients.length + " ingredients!");
-
-            // Get the steps in String format, as it was stored in the Content Provider
-            String stepsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_STEPS));
-            // Parse the String to get the steps into an array
-            JSONArray stepsJsonArray = null;
-            try {
-                stepsJsonArray = new JSONArray(stepsString);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error parsing string to JSONArray: " + stepsString);
-            }
-            mSteps = new Step[stepsJsonArray.length()];
-            for (int i = 0; i < stepsJsonArray.length(); i++){
-                try {
-                    mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Error parsing string to JSONArray: " + stepsString);
-                }
-            }
-            Log.v(LOG_TAG, "Retrieved " + mSteps.length + " steps!");
+            Log.v(LOG_TAG, "onCreateView - savedInstanceState NULL");
+        } else {
+            mRecipe_ID = savedInstanceState.getInt(RECIPE_ID_KEY);
+            Log.v(LOG_TAG, "onCreateView - savedInstanceState NOT NULL");
         }
+
+        updateRecipeDetails();
 
         mRecipeDetailRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe_detail);
         mRecipeDetailLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -126,5 +83,75 @@ public class RecipeDetailFragment extends Fragment {
         mRecipeDetailRecyclerView.setAdapter(mRecipeDetailAdapter);
 
         return rootView;
+    }
+
+    public void updateRecipeDetails(){
+
+        // Query the Content Provider
+        Cursor cursorRecipe;
+        String[] projection = DETAIL_RECIPE_PROJECTION;
+        String selection = RecipeEntry._ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(mRecipe_ID)};
+
+        cursorRecipe = getContext().getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null);
+
+        cursorRecipe.moveToFirst();
+
+        // Get the ingredients in String format, as it was stored in the Content Provider
+        String ingredientsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_INGREDIENTS));
+        // Parse the String to get the ingredients into an array
+        JSONArray ingredientsJsonArray = null;
+        try {
+            ingredientsJsonArray = new JSONArray(ingredientsString);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+        }
+        mIngredients = new Ingredient[ingredientsJsonArray.length()];
+        for (int i = 0; i < ingredientsJsonArray.length(); i++){
+            try {
+                mIngredients[i] = new Ingredient(ingredientsJsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+            }
+        }
+        Log.v(LOG_TAG, "Retrieved " + mIngredients.length + " ingredients!");
+
+        // Get the steps in String format, as it was stored in the Content Provider
+        String stepsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_STEPS));
+        // Parse the String to get the steps into an array
+        JSONArray stepsJsonArray = null;
+        try {
+            stepsJsonArray = new JSONArray(stepsString);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Error parsing string to JSONArray: " + stepsString);
+        }
+        mSteps = new Step[stepsJsonArray.length()];
+        for (int i = 0; i < stepsJsonArray.length(); i++){
+            try {
+                mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Error parsing string to JSONArray: " + stepsString);
+            }
+        }
+        Log.v(LOG_TAG, "Retrieved " + mSteps.length + " steps!");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Log.v(LOG_TAG, "onActivityCreated");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(RECIPE_ID_KEY, mRecipe_ID);
+        Log.v(LOG_TAG, "onSaveInstanceState - mRecipe_ID: " + mRecipe_ID);
     }
 }

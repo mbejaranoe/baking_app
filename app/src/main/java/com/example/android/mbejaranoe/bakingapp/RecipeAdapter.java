@@ -105,7 +105,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
             Log.v("RecipeAdapter", "Recipe _id: " + recipe_id);
             String recipeName = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME));
             Log.v("RecipeAdapter", "Recipe name: " + recipeName);
-            intent.putExtra("recipe_id", recipe_id);
+            intent.putExtra("recipe_Id", recipe_id);
             intent.putExtra("name", recipeName);
             view.getContext().startActivity(intent);
         }

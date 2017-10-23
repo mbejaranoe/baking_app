@@ -27,7 +27,7 @@ public class StepDetailActivity extends AppCompatActivity {
     private final String RECIPE_ID_KEY = "recipe_Id";
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
-    private final String FRAGMENT_TAG = "myFragment";
+    private final String FRAGMENT_TAG = "stepDetailFragment";
 
     private final int STEP_INDEX_DEFAULT_VALUE = -1;
     private final int RECIPE_ID_DEFAULT_VALUE = -1;
