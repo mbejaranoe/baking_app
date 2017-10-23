@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -78,6 +79,10 @@ public class StepDetailActivity extends AppCompatActivity {
             fragmentManager.beginTransaction()
                     .add(R.id.container, stepDetailFragment, FRAGMENT_TAG)
                     .commit();
+        } else {
+            shortDescription = savedInstanceState.getString(SHORT_DESCRIPTION_KEY);
+            stepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
+            recipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
         }
     }
 
@@ -86,8 +91,6 @@ public class StepDetailActivity extends AppCompatActivity {
         // decrement the step index
         stepIndex = stepIndex - 1;
 
-        stepDetailFragment.setStepIndex(stepIndex);
-        /*
         // create a new fragment to replace the old one
         FragmentManager fragmentManager = getSupportFragmentManager();
         StepDetailFragment newFragment = new StepDetailFragment();
@@ -97,12 +100,13 @@ public class StepDetailActivity extends AppCompatActivity {
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
         newFragment.setArguments(args);
+        Log.v(LOG_TAG, "Prev button, stepIndex: " + stepIndex);
+        Log.v(LOG_TAG, "Prev button, recipe_Id: " + recipe_Id);
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment)
+                .replace(R.id.container, newFragment, FRAGMENT_TAG)
                 .commit();
-        */
     }
 
     public void nextButtonOnClick(View view){
@@ -110,9 +114,6 @@ public class StepDetailActivity extends AppCompatActivity {
         // increment the step index
         stepIndex = stepIndex + 1;
 
-        stepDetailFragment.setStepIndex(stepIndex);
-
-        /*
         // create a new fragment to replace the old one
         FragmentManager fragmentManager = getSupportFragmentManager();
         StepDetailFragment newFragment = new StepDetailFragment();
@@ -122,21 +123,25 @@ public class StepDetailActivity extends AppCompatActivity {
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
         newFragment.setArguments(args);
+        Log.v(LOG_TAG, "Next button, stepIndex: " + stepIndex);
+        Log.v(LOG_TAG, "Next button, recipe_Id: " + recipe_Id);
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment)
+                .replace(R.id.container, newFragment, FRAGMENT_TAG)
                 .commit();
-                */
     }
 
-    /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putString(SHORT_DESCRIPTION_KEY, shortDescription);
         outState.putInt(STEP_INDEX_KEY, stepIndex);
         outState.putInt(RECIPE_ID_KEY, recipe_Id);
+
+        Log.v(LOG_TAG, "onSaveInstanceState, shortDescription: " + shortDescription);
+        Log.v(LOG_TAG, "onSaveInstanceState, stepIndex: " + stepIndex);
+        Log.v(LOG_TAG, "onSaveInstanceState, recipe_Id: " + recipe_Id);
     }
-    */
 }

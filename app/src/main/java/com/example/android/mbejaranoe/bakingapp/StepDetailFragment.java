@@ -403,10 +403,4 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         outState.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
         outState.putLong(RESUME_POSITION_KEY, resumePosition);
     }
-
-    public void setStepIndex(int index){
-        mStepIndex = index;
-
-        updateStepDetails();
-    }
 }
