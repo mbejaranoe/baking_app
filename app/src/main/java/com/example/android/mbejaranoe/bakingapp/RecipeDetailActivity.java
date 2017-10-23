@@ -2,6 +2,7 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     private final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private final String FRAGMENT_TAG = "recipeDetailFragment";
+    private final String SAVED_STATE_KEY = "savedState";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,29 +27,40 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_detail);
 
         // only create a new fragment when it is not previously created
-        if (savedInstanceState == null) {
+        // find the retained fragment on activity restarts
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        recipeDetailFragment = (RecipeDetailFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+
+        // create the fragment and data the first time
+        if (recipeDetailFragment == null) {
             Intent intent = getIntent();
             if (intent != null && intent.hasExtra("name")) {
                 recipeName = intent.getStringExtra("name");
                 setTitle(recipeName);
             }
-            Log.v(LOG_TAG, "onCreate - savedInstanceState NULL");
-            // Create the fragment for recipe details
+
+            Log.v(LOG_TAG, "onCreate - recipeDetailFragment NULL");
+            // add the fragment
             recipeDetailFragment = new RecipeDetailFragment();
-            // Use the fragment manager and transaction to add the fragment to the screen
-            FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .add(R.id.container, recipeDetailFragment, FRAGMENT_TAG)
                     .commit();
         } else {
             recipeName = savedInstanceState.getString("name");
             setTitle(recipeName);
-            Log.v(LOG_TAG, "onCreate - savedInstanceState NOT NULL");
 
-            RecipeDetailFragment newDetailFragment = new RecipeDetailFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
+            Log.v(LOG_TAG, "onCreate - recipeDetailFragment NOT NULL");
+
+            Parcelable parcelable = savedInstanceState.getParcelable(SAVED_STATE_KEY);
+
+            if (parcelable == null) {
+                Log.v(LOG_TAG, "onCreate - parcelable NULL");
+            } else {
+                Log.v(LOG_TAG, "onCreate - parcelable NOT NULL");
+            }
+            recipeDetailFragment.getRecyclerView().getLayoutManager().onRestoreInstanceState(parcelable);
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, newDetailFragment, FRAGMENT_TAG)
+                    .show(recipeDetailFragment)
                     .commit();
         }
     }
@@ -56,6 +69,15 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("name", recipeName);
 
+        Parcelable parcelable = recipeDetailFragment.getLayoutManagerSavedInstanceState();
+        outState.putParcelable(SAVED_STATE_KEY, parcelable);
+
         Log.v(LOG_TAG, "onSaveInstanceState - recipeName: " + recipeName);
+        if (parcelable == null){
+            Log.v(LOG_TAG, "onSaveInstanceState - parcelable NULL");
+        } else {
+            Log.v(LOG_TAG, "onSaveInstanceState - parcelable NOT NULL");
+        }
+
     }
 }

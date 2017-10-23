@@ -3,6 +3,7 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +42,8 @@ public class RecipeDetailFragment extends Fragment {
     public static Step[] mSteps;
     public static int mRecipe_ID;
 
+    private Parcelable layoutManagerSavedInstanceState;
+
     private RecyclerView mRecipeDetailRecyclerView;
     private RecipeDetailAdapter mRecipeDetailAdapter;
     private RecyclerView.LayoutManager mRecipeDetailLayoutManager;
@@ -52,6 +55,9 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // retain this fragment
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -81,6 +87,7 @@ public class RecipeDetailFragment extends Fragment {
 
         mRecipeDetailAdapter = new RecipeDetailAdapter(mRecipe_ID, mIngredients, mSteps, getContext());
         mRecipeDetailRecyclerView.setAdapter(mRecipeDetailAdapter);
+        layoutManagerSavedInstanceState = mRecipeDetailRecyclerView.getLayoutManager().onSaveInstanceState();
 
         return rootView;
     }
@@ -140,18 +147,11 @@ public class RecipeDetailFragment extends Fragment {
         Log.v(LOG_TAG, "Retrieved " + mSteps.length + " steps!");
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Log.v(LOG_TAG, "onActivityCreated");
+    public RecyclerView getRecyclerView(){
+        return mRecipeDetailRecyclerView;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt(RECIPE_ID_KEY, mRecipe_ID);
-        Log.v(LOG_TAG, "onSaveInstanceState - mRecipe_ID: " + mRecipe_ID);
+    public Parcelable getLayoutManagerSavedInstanceState(){
+        return layoutManagerSavedInstanceState;
     }
 }
