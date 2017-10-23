@@ -22,6 +22,9 @@ import com.squareup.picasso.Picasso;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdapterViewHolder> {
 
+    private final String RECIPE_NAME_KEY = "name";
+    private final String RECIPE_ID_KEY = "recipe_Id";
+
     // Cursor to store the recipes data
     private Cursor mCursor;
     private Context mContext;
@@ -105,8 +108,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
             Log.v("RecipeAdapter", "Recipe _id: " + recipe_id);
             String recipeName = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_NAME));
             Log.v("RecipeAdapter", "Recipe name: " + recipeName);
-            intent.putExtra("recipe_Id", recipe_id);
-            intent.putExtra("name", recipeName);
+            intent.putExtra(RECIPE_ID_KEY, recipe_id);
+            intent.putExtra(RECIPE_NAME_KEY, recipeName);
             view.getContext().startActivity(intent);
         }
     }

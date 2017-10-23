@@ -15,11 +15,14 @@ import android.util.Log;
 public class RecipeDetailActivity extends AppCompatActivity {
 
     private String recipeName;
+    private int recipe_Id;
     private RecipeDetailFragment recipeDetailFragment;
 
     private final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private final String FRAGMENT_TAG = "recipeDetailFragment";
     private final String SAVED_STATE_KEY = "savedState";
+    private final String RECIPE_NAME_KEY = "name";
+    private final String RECIPE_ID_KEY = "recipe_Id";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,19 +37,27 @@ public class RecipeDetailActivity extends AppCompatActivity {
         // create the fragment and data the first time
         if (recipeDetailFragment == null) {
             Intent intent = getIntent();
-            if (intent != null && intent.hasExtra("name")) {
-                recipeName = intent.getStringExtra("name");
+            if (intent != null && intent.hasExtra(RECIPE_NAME_KEY)) {
+                recipeName = intent.getStringExtra(RECIPE_NAME_KEY);
                 setTitle(recipeName);
             }
 
+            if (intent != null && intent.hasExtra(RECIPE_ID_KEY)) {
+                recipe_Id = intent.getIntExtra(RECIPE_ID_KEY, -1);
+            }
+
             Log.v(LOG_TAG, "onCreate - recipeDetailFragment NULL");
+
             // add the fragment
             recipeDetailFragment = new RecipeDetailFragment();
+            Bundle args = new Bundle();
+            args.putInt(RECIPE_ID_KEY, recipe_Id);
+            recipeDetailFragment.setArguments(args);
             fragmentManager.beginTransaction()
                     .add(R.id.container, recipeDetailFragment, FRAGMENT_TAG)
                     .commit();
         } else {
-            recipeName = savedInstanceState.getString("name");
+            recipeName = savedInstanceState.getString(RECIPE_NAME_KEY);
             setTitle(recipeName);
 
             Log.v(LOG_TAG, "onCreate - recipeDetailFragment NOT NULL");
@@ -59,15 +70,15 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 Log.v(LOG_TAG, "onCreate - parcelable NOT NULL");
             }
             recipeDetailFragment.getRecyclerView().getLayoutManager().onRestoreInstanceState(parcelable);
-            fragmentManager.beginTransaction()
-                    .show(recipeDetailFragment)
-                    .commit();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("name", recipeName);
+        super.onSaveInstanceState(outState);
+
+        outState.putString(RECIPE_NAME_KEY, recipeName);
+        outState.putInt(RECIPE_ID_KEY, recipe_Id);
 
         Parcelable parcelable = recipeDetailFragment.getLayoutManagerSavedInstanceState();
         outState.putParcelable(SAVED_STATE_KEY, parcelable);
@@ -78,6 +89,5 @@ public class RecipeDetailActivity extends AppCompatActivity {
         } else {
             Log.v(LOG_TAG, "onSaveInstanceState - parcelable NOT NULL");
         }
-
     }
 }

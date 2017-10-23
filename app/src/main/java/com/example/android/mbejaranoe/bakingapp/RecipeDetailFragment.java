@@ -75,7 +75,7 @@ public class RecipeDetailFragment extends Fragment {
             }
             Log.v(LOG_TAG, "onCreateView - savedInstanceState NULL");
         } else {
-            mRecipe_ID = savedInstanceState.getInt(RECIPE_ID_KEY);
+            mRecipe_ID = getArguments().getInt(RECIPE_ID_KEY);
             Log.v(LOG_TAG, "onCreateView - savedInstanceState NOT NULL");
         }
 
@@ -99,6 +99,7 @@ public class RecipeDetailFragment extends Fragment {
         String[] projection = DETAIL_RECIPE_PROJECTION;
         String selection = RecipeEntry._ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(mRecipe_ID)};
+        Log.v(LOG_TAG, "updateRecipeDetails - mRecipe_ID: " + mRecipe_ID);
 
         cursorRecipe = getContext().getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
                 projection,
