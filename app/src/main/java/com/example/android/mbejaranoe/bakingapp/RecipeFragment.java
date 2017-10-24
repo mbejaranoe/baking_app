@@ -12,8 +12,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +30,12 @@ import com.example.android.mbejaranoe.bakingapp.data.RecipeContract;
 
 public class RecipeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    private final String LOG_TAG = RecipeFragment.class.getSimpleName();
+
     private RecyclerView mRecipeRecyclerView;
     private RecipeAdapter mRecipeAdapter;
     private RecyclerView.LayoutManager mRecipeLayoutManager;
+    private boolean mTwoPane;
 
     private static final int RECIPE_LOADER_ID = 22;
 
@@ -67,7 +72,15 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe);
-        mRecipeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
+            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp >= 600");
+            mTwoPane = true;
+            mRecipeLayoutManager = new GridLayoutManager(getContext(), 3);
+        } else {
+            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp < 600");
+            mTwoPane = false;
+            mRecipeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        }
         mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
 
         mRecipeAdapter = new RecipeAdapter();
