@@ -166,10 +166,98 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
         // get the screen orientation
         Configuration configuration = getActivity().getResources().getConfiguration();
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
 
-            // set the title for the parent activity
-            getActivity().setTitle(step.getShortDescription());
+        // get the smallestScreenWidth
+        int smallestScreenWidthDp = getResources().getConfiguration().smallestScreenWidthDp;
+
+        if (smallestScreenWidthDp < 600) { // phone mode
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
+
+                // set the title for the parent activity
+                getActivity().setTitle(step.getShortDescription());
+
+                // populate description view
+                if (step.getDescription().equals("")) {
+                    stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
+                    stepDetailDescriptionTextView.setText(getResources()
+                            .getString(R.string.no_step_description_message));
+                } else {
+                    stepDetailDescriptionTextView.setText(step.getDescription());
+                }
+
+                // populate the thumbnail view
+                Bitmap artwork = null;
+                if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
+                    artwork = BitmapFactory.decodeResource(getResources(), R.drawable.recipestepplaceholder_black);
+                } else {
+                    artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
+                }
+                stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
+
+                // Initialize the Media Session
+                initializeMediaSession();
+
+                // set the video url for video playback, or the imageview in case there is no video url
+                releasePlayer();
+                if (!(step.getVideoURL().equals(""))) {
+                    stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                    initializePlayer(Uri.parse(step.getVideoURL()));
+                } else {
+                    stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                    stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
+                    Log.v(TAG, "No video url available.");
+                }
+
+                // enable/disable nav button when on the first/last step
+                prevStepButton.setVisibility(View.VISIBLE);
+                nextStepButton.setVisibility(View.VISIBLE);
+                if (mStepIndex == 0) {
+                    prevStepButton.setEnabled(false);
+                } else if (mStepIndex == mSteps.length - 1) {
+                    nextStepButton.setEnabled(false);
+                } else {
+                    prevStepButton.setEnabled(true);
+                    nextStepButton.setEnabled(true);
+                }
+            } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // landscape mode
+
+                // hide all the views but exoplayer view and video image placeholder view
+                stepDetailDescriptionTextView.setVisibility(View.GONE);
+                prevStepButton.setVisibility(View.GONE);
+                nextStepButton.setVisibility(View.GONE);
+
+                // change the width and height of both exoplayer view and video image placeholder view
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)
+                        stepDetailSimpleExoPlayerView.getLayoutParams();
+                params.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
+                params.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
+                stepDetailSimpleExoPlayerView.setLayoutParams(params);
+                stepDetailVideoPlaceholderImageView.setLayoutParams(params);
+
+                // set the video url for video playback, or the imageview in case there is no video url
+                if (!(step.getVideoURL().equals(""))) {
+                    int color = Color.WHITE;
+                    exoPositionTextView.setTextColor(color);
+                    exoDurationTextView.setTextColor(color);
+                    stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                    initializeMediaSession();
+                    initializePlayer(Uri.parse(step.getVideoURL()));
+                } else {
+                    stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                    stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
+                    stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
+                    Log.v(TAG, "No video url available.");
+                }
+            }
+        } else { // tablet mode
+            // hide nav buttons
+            prevStepButton.setVisibility(View.GONE);
+            nextStepButton.setVisibility(View.GONE);
 
             // populate description view
             if (step.getDescription().equals("")) {
@@ -201,49 +289,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 initializePlayer(Uri.parse(step.getVideoURL()));
             } else {
                 stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
-                stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
-                stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                Log.v(TAG, "No video url available.");
-            }
-
-            // enable/disable nav button when on the first/last step
-            prevStepButton.setVisibility(View.VISIBLE);
-            nextStepButton.setVisibility(View.VISIBLE);
-            if (mStepIndex == 0) {
-                prevStepButton.setEnabled(false);
-            } else if (mStepIndex == mSteps.length - 1) {
-                nextStepButton.setEnabled(false);
-            } else {
-                prevStepButton.setEnabled(true);
-                nextStepButton.setEnabled(true);
-            }
-        } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // landscape mode
-
-            // hide all the views but exoplayer view and video image placeholder view
-            stepDetailDescriptionTextView.setVisibility(View.GONE);
-            prevStepButton.setVisibility(View.GONE);
-            nextStepButton.setVisibility(View.GONE);
-
-            // change the width and height of both exoplayer view and video image placeholder view
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)
-                    stepDetailSimpleExoPlayerView.getLayoutParams();
-            params.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
-            params.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
-            stepDetailSimpleExoPlayerView.setLayoutParams(params);
-            stepDetailVideoPlaceholderImageView.setLayoutParams(params);
-
-            // set the video url for video playback, or the imageview in case there is no video url
-            if (!(step.getVideoURL().equals(""))) {
-                int color = Color.WHITE;
-                exoPositionTextView.setTextColor(color);
-                exoDurationTextView.setTextColor(color);
-                stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-                stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
-                initializeMediaSession();
-                initializePlayer(Uri.parse(step.getVideoURL()));
-            } else {
-                stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
-                stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
                 Log.v(TAG, "No video url available.");

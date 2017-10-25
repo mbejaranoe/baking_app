@@ -6,4 +6,5 @@
     <string name="no_step_description_message">There is no description for this step. It must be so easy!</string>
     <string name="prev_step_button">Prev step</string>
     <string name="next_step_button">Next step</string>
+    <string name="title_activity_master_detail">Recipe details</string>
 </resources>

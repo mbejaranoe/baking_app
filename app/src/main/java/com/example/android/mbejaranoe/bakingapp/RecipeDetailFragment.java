@@ -67,11 +67,12 @@ public class RecipeDetailFragment extends Fragment {
         // Inflate the Recipe detail fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
 
-        if (savedInstanceState == null) {
+        //if (savedInstanceState == null) {
+        if (savedInstanceState == null && getResources().getConfiguration().smallestScreenWidthDp < 600){
             // Get the intent and its extras in order to get the recipe ingredients and steps
             Intent intent = getActivity().getIntent();
             if (intent.hasExtra(RECIPE_ID_KEY)) {
-                mRecipe_ID = intent.getIntExtra(RECIPE_ID_KEY, 0);
+                mRecipe_ID = intent.getIntExtra(RECIPE_ID_KEY, -1);
             }
             Log.v(LOG_TAG, "onCreateView - savedInstanceState NULL");
         } else {
