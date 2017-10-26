@@ -23,6 +23,13 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private int numIngred;
     private int recipe_Id;
 
+    OnStepClickListener mcallback;
+
+    //onStepClickListener interface calls a method in the host activity named onStepSelected
+    public interface OnStepClickListener {
+        void onStepSelected(int stepId);
+    }
+
     public StepsViewHolder(View itemView) {
         super(itemView);
 
@@ -30,6 +37,13 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
         stepShortDescriptionTextView = (TextView) itemView.findViewById(R.id.step_short_description_text_view);
 
         itemView.setOnClickListener(this);
+
+        try {
+            mcallback = (OnStepClickListener) itemView.getContext();
+        } catch (ClassCastException e){
+            throw new ClassCastException(itemView.getContext().toString()
+            + " must implement OnStepClickListener");
+        }
     }
 
     public static void setStepsViewHolder(Context context, StepsViewHolder holder, Step step){
@@ -56,6 +70,8 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View view) {
         if (view.getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             // change StepDetailFragment to show the new step details
+            int stepIndex = getAdapterPosition() - numIngred;
+            mcallback.onStepSelected(stepIndex);
             // marcar el step en color --> see Sunshine
         } else {
             Intent intent = new Intent(view.getContext(), StepDetailActivity.class);

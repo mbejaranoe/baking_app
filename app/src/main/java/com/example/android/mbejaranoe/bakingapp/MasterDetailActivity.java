@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
  * Created by Manolo on 25/10/2017.
  */
 
-public class MasterDetailActivity extends AppCompatActivity {
+public class MasterDetailActivity extends AppCompatActivity implements StepsViewHolder.OnStepClickListener{
 
     public final String LOG_TAG = MasterDetailActivity.class.getSimpleName();
 
@@ -73,5 +73,23 @@ public class MasterDetailActivity extends AppCompatActivity {
                     .add(R.id.step_detail_container, stepDetailFragment, STEP_DETAILS_FRAGMENT_TAG)
                     .commit();
         }
+    }
+
+    @Override
+    public void onStepSelected(int stepId) {
+        stepIndex = stepId;
+
+        StepDetailFragment newFragment = new StepDetailFragment();
+        Bundle stepArgs = new Bundle();
+        stepArgs.putInt(STEP_INDEX_KEY, stepIndex);
+        stepArgs.putInt(RECIPE_ID_KEY, recipe_Id);
+        stepArgs.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
+        stepArgs.putLong(RESUME_POSITION_KEY, resumePosition);
+        newFragment.setArguments(stepArgs);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.step_detail_container,newFragment)
+                .commit();
     }
 }

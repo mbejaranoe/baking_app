@@ -44,6 +44,8 @@ import com.google.android.exoplayer2.util.Util;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import static com.google.android.exoplayer2.mediacodec.MediaCodecInfo.TAG;
+
 /**
  * Created by Manolo on 10/10/2017.
  * Fragment to show the step details
@@ -51,7 +53,7 @@ import org.json.JSONException;
 
 public class StepDetailFragment extends Fragment implements ExoPlayer.EventListener{
 
-    private final String TAG = StepDetailFragment.class.getSimpleName();
+    private final String LOG_TAG = StepDetailFragment.class.getSimpleName();
 
     private final String STEP_INDEX_KEY = "stepIndex";
     private final String RECIPE_ID_KEY = "recipe_Id";
@@ -83,8 +85,14 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        // Inflate the step detail fragment layout
-        View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
+        View rootView;
+        if (getResources().getConfiguration().smallestScreenWidthDp >= 600){
+            Log.v(LOG_TAG, "tablet");
+            rootView = inflater.inflate(R.layout.master_detail_step_fragment, container, false);
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
+            Log.v(LOG_TAG, "phone");
+        }
 
         stepDetailSimpleExoPlayerView = (SimpleExoPlayerView) rootView
                 .findViewById(R.id.step_detail_simple_exoplayer_view);
@@ -128,7 +136,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         // get the steps string and parse it to get a Step[]
         if (mCursor.moveToFirst()){
 
-            Log.v(TAG, "updateStepDetails - Cursor.moveToFirst = TRUE");
+            Log.v(LOG_TAG, "updateStepDetails - Cursor.moveToFirst = TRUE");
 
             // get the json string with the steps details
             String stringSteps = mCursor.getString(mCursor.getColumnIndex(RecipeEntry.COLUMN_STEPS));
@@ -136,30 +144,30 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             try {
                 stepsJsonArray = new JSONArray(stringSteps);
             } catch (JSONException e){
-                Log.e(TAG, "updateStepDetails - Error parsing steps JSONArray: " + stringSteps);
+                Log.e(LOG_TAG, "updateStepDetails - Error parsing steps JSONArray: " + stringSteps);
             }
 
-            Log.v(TAG, "updateStepDetails - Number of steps after parsing: " + stepsJsonArray.length());
+            Log.v(LOG_TAG, "updateStepDetails - Number of steps after parsing: " + stepsJsonArray.length());
 
             // parse the json string into a Step[]
             mSteps = new Step[stepsJsonArray.length()];
 
-            Log.v(TAG, "updateStepDetails - mSteps array length: " + mSteps.length);
+            Log.v(LOG_TAG, "updateStepDetails - mSteps array length: " + mSteps.length);
 
             for (int i = 0; i < stepsJsonArray.length(); i++){
                 try {
                     mSteps[i] = new Step(stepsJsonArray.getJSONObject(i));
-                    Log.v(TAG, "updateStepDetails - Step[" + i + "] creation successful");
+                    Log.v(LOG_TAG, "updateStepDetails - Step[" + i + "] creation successful");
                 } catch (JSONException e) {
-                    Log.e(TAG, "updateStepDetails - Error parsing JSONObject step.");
+                    Log.e(LOG_TAG, "updateStepDetails - Error parsing JSONObject step.");
                 }
             }
         }
 
         if (mSteps == null) {
-            Log.v(TAG, "updateStepDetails - mSteps array is NULL");
+            Log.v(LOG_TAG, "updateStepDetails - mSteps array is NULL");
         } else {
-            Log.v(TAG, "updateStepDetails - mSteps array is NOT NULL");
+            Log.v(LOG_TAG, "updateStepDetails - mSteps array is NOT NULL");
         }
         // get the appropriate step
         Step step = mSteps[mStepIndex];
@@ -208,7 +216,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
                     stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                     stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                    Log.v(TAG, "No video url available.");
+                    Log.v(LOG_TAG, "No video url available.");
                 }
 
                 // enable/disable nav button when on the first/last step
@@ -251,7 +259,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
                     stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                     stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                    Log.v(TAG, "No video url available.");
+                    Log.v(LOG_TAG, "No video url available.");
                 }
             }
         } else { // tablet mode
@@ -260,8 +268,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             nextStepButton.setVisibility(View.GONE);
 
             // populate description view
+            stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
             if (step.getDescription().equals("")) {
-                stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
                 stepDetailDescriptionTextView.setText(getResources()
                         .getString(R.string.no_step_description_message));
             } else {
@@ -284,6 +292,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             // set the video url for video playback, or the imageview in case there is no video url
             releasePlayer();
             if (!(step.getVideoURL().equals(""))) {
+                int color = Color.WHITE;
+                exoPositionTextView.setTextColor(color);
+                exoDurationTextView.setTextColor(color);
                 stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
                 initializePlayer(Uri.parse(step.getVideoURL()));
@@ -291,7 +302,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
-                Log.v(TAG, "No video url available.");
+                Log.v(LOG_TAG, "No video url available.");
             }
         }
         mCursor.close();
