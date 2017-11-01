@@ -1,9 +1,7 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,6 +66,7 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onClick(View view) {
+        /*
         if (view.getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             // change StepDetailFragment to show the new step details
             int stepIndex = getAdapterPosition() - numIngred;
@@ -86,5 +85,8 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
             intent.putExtra("shortDescription", stepShortDescriptionTextView.getText());
             view.getContext().startActivity(intent);
         }
+         */
+        int stepIndex = getAdapterPosition() - numIngred;
+        mcallback.onStepSelected(stepIndex);
     }
 }

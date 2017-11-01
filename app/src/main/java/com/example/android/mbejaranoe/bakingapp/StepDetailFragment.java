@@ -1,14 +1,12 @@
 package com.example.android.mbejaranoe.bakingapp;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -18,11 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
-import com.example.android.mbejaranoe.bakingapp.utilities.NetworkUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -60,14 +58,18 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
 
+    private final float PLAYBACK_SPEED = 0.25f;
+
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private ImageView stepDetailVideoPlaceholderImageView;
     private SimpleExoPlayer mSimpleExoPlayer;
     private TextView stepDetailDescriptionTextView;
     private TextView exoPositionTextView;
     private TextView exoDurationTextView;
+    private LinearLayout navButtonsLinearLayout;
     private Button prevStepButton;
     private Button nextStepButton;
+
     private Step[] mSteps;
     private int mStepIndex;
     private int mRecipe_Id;
@@ -81,18 +83,18 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public StepDetailFragment() {
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView;
-        if (getResources().getConfiguration().smallestScreenWidthDp >= 600){
-            Log.v(LOG_TAG, "tablet");
-            rootView = inflater.inflate(R.layout.master_detail_step_fragment, container, false);
-        } else {
-            rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
-            Log.v(LOG_TAG, "phone");
-        }
+        View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
         stepDetailSimpleExoPlayerView = (SimpleExoPlayerView) rootView
                 .findViewById(R.id.step_detail_simple_exoplayer_view);
@@ -102,20 +104,49 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 .findViewById(R.id.step_detail_description_text_view);
         exoPositionTextView = (TextView) rootView.findViewById(R.id.exo_position);
         exoDurationTextView = (TextView) rootView.findViewById(R.id.exo_duration);
+        navButtonsLinearLayout = (LinearLayout) rootView.findViewById(R.id.nav_buttons_linear_layout);
         prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
         nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
 
-        if (savedInstanceState == null) {
-            Bundle args = getArguments();
-            mStepIndex = args.getInt(STEP_INDEX_KEY);
-            mRecipe_Id = args.getInt(RECIPE_ID_KEY);
-            shouldAutoPlay = false;
-            resumePosition = 0;
-        } else {
-            mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
-            mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
-            shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
-            resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
+        if (getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) { // tablet mode
+            if (savedInstanceState == null) {
+                Bundle args = getArguments();
+                mStepIndex = args.getInt(STEP_INDEX_KEY);
+                mRecipe_Id = args.getInt(RECIPE_ID_KEY);
+                shouldAutoPlay = false;
+                resumePosition = 0;
+                Log.v(LOG_TAG, "onCreateView: tablet mode and savedInstanceState NULL");
+            } else {
+                mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
+                mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
+                shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
+                resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
+                Log.v(LOG_TAG, "onCreateView: tablet mode and savedInstanceState NOT NULL");
+            }
+        } else { // phone mode
+            if (getArguments() == null) {
+                Intent intent = getActivity().getIntent();
+
+                mStepIndex = intent.getExtras().getInt(STEP_INDEX_KEY);
+                mRecipe_Id = intent.getExtras().getInt(RECIPE_ID_KEY);
+                shouldAutoPlay = false;
+                resumePosition = 0;
+                Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NULL");
+            } else {
+                if (savedInstanceState == null) {
+                    mStepIndex = getArguments().getInt(STEP_INDEX_KEY);
+                    mRecipe_Id = getArguments().getInt(RECIPE_ID_KEY);
+                    shouldAutoPlay = getArguments().getBoolean(SHOULD_AUTO_PLAY_KEY);
+                    resumePosition = getArguments().getLong(RESUME_POSITION_KEY);
+                    Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NULL");
+                } else {
+                    mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
+                    mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
+                    shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
+                    resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
+                    Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NOT NULL");
+                }
+            }
         }
 
         updateStepDetails();
@@ -185,43 +216,36 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 getActivity().setTitle(step.getShortDescription());
 
                 // populate description view
+                stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
                 if (step.getDescription().equals("")) {
-                    stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
                     stepDetailDescriptionTextView.setText(getResources()
                             .getString(R.string.no_step_description_message));
                 } else {
                     stepDetailDescriptionTextView.setText(step.getDescription());
                 }
 
-                // populate the thumbnail view
-                Bitmap artwork = null;
-                if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
-                    artwork = BitmapFactory.decodeResource(getResources(), R.drawable.recipestepplaceholder_black);
-                } else {
-                    artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
-                }
-                stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-                stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
-
-                // Initialize the Media Session
-                initializeMediaSession();
-
                 // set the video url for video playback, or the imageview in case there is no video url
                 releasePlayer();
                 if (!(step.getVideoURL().equals(""))) {
                     stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-                    stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.GONE);
+                    // Initialize the Media Session
+                    initializeMediaSession();
+                    // Initialize the Player
                     initializePlayer(Uri.parse(step.getVideoURL()));
                 } else {
-                    stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                    stepDetailSimpleExoPlayerView.setVisibility(View.GONE);
                     stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                     stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
                     Log.v(LOG_TAG, "No video url available.");
                 }
 
-                // enable/disable nav button when on the first/last step
+                // show nav buttons
+                navButtonsLinearLayout.setVisibility(View.VISIBLE);
                 prevStepButton.setVisibility(View.VISIBLE);
                 nextStepButton.setVisibility(View.VISIBLE);
+
+                // enable/disable nav button when on the first/last step
                 if (mStepIndex == 0) {
                     prevStepButton.setEnabled(false);
                 } else if (mStepIndex == mSteps.length - 1) {
@@ -230,18 +254,20 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     prevStepButton.setEnabled(true);
                     nextStepButton.setEnabled(true);
                 }
+
             } else if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) { // landscape mode
 
-                // hide all the views but exoplayer view and video image placeholder view
+                // hide all the views but exoplayer view or video image placeholder view
                 stepDetailDescriptionTextView.setVisibility(View.GONE);
+                navButtonsLinearLayout.setVisibility(View.GONE);
                 prevStepButton.setVisibility(View.GONE);
                 nextStepButton.setVisibility(View.GONE);
 
                 // change the width and height of both exoplayer view and video image placeholder view
-                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)
                         stepDetailSimpleExoPlayerView.getLayoutParams();
-                params.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
-                params.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
+                params.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                params.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 stepDetailSimpleExoPlayerView.setLayoutParams(params);
                 stepDetailVideoPlaceholderImageView.setLayoutParams(params);
 
@@ -251,11 +277,11 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     exoPositionTextView.setTextColor(color);
                     exoDurationTextView.setTextColor(color);
                     stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-                    stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                    stepDetailVideoPlaceholderImageView.setVisibility(View.GONE);
                     initializeMediaSession();
                     initializePlayer(Uri.parse(step.getVideoURL()));
                 } else {
-                    stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                    stepDetailSimpleExoPlayerView.setVisibility(View.GONE);
                     stepDetailVideoPlaceholderImageView.setScaleType(ImageView.ScaleType.CENTER);
                     stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                     stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
@@ -264,6 +290,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             }
         } else { // tablet mode
             // hide nav buttons
+            navButtonsLinearLayout.setVisibility(View.GONE);
             prevStepButton.setVisibility(View.GONE);
             nextStepButton.setVisibility(View.GONE);
 
@@ -276,19 +303,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 stepDetailDescriptionTextView.setText(step.getDescription());
             }
 
-            // populate the thumbnail view
-            Bitmap artwork = null;
-            if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
-                artwork = BitmapFactory.decodeResource(getResources(), R.drawable.recipestepplaceholder_black);
-            } else {
-                artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
-            }
-            stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-            stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
-
-            // Initialize the Media Session
-            initializeMediaSession();
-
             // set the video url for video playback, or the imageview in case there is no video url
             releasePlayer();
             if (!(step.getVideoURL().equals(""))) {
@@ -296,10 +310,13 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 exoPositionTextView.setTextColor(color);
                 exoDurationTextView.setTextColor(color);
                 stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
-                stepDetailVideoPlaceholderImageView.setVisibility(View.INVISIBLE);
+                stepDetailVideoPlaceholderImageView.setVisibility(View.GONE);
+                // Initialize the Media Session
+                initializeMediaSession();
+                // Initialize the Player
                 initializePlayer(Uri.parse(step.getVideoURL()));
             } else {
-                stepDetailSimpleExoPlayerView.setVisibility(View.INVISIBLE);
+                stepDetailSimpleExoPlayerView.setVisibility(View.GONE);
                 stepDetailVideoPlaceholderImageView.setImageResource(R.drawable.recipestepplaceholder_black);
                 stepDetailVideoPlaceholderImageView.setVisibility(View.VISIBLE);
                 Log.v(LOG_TAG, "No video url available.");
@@ -311,6 +328,23 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        releasePlayer();
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+        }
+    }
+
+    /*
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+    */
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
         releasePlayer();
         if (mMediaSession != null) {
             mMediaSession.setActive(false);
@@ -335,6 +369,11 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             mSimpleExoPlayer.prepare(mediaSource);
             mSimpleExoPlayer.setPlayWhenReady(shouldAutoPlay);
             mSimpleExoPlayer.seekTo(resumePosition);
+            /*
+            PlaybackParams params = new PlaybackParams();
+            params.setSpeed(PLAYBACK_SPEED);
+            mSimpleExoPlayer.setPlaybackParams(params);
+            */
         }
     }
 
@@ -446,6 +485,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        Log.v(LOG_TAG, "onSaveInstanceState");
 
         outState.putInt(STEP_INDEX_KEY, mStepIndex);
         outState.putInt(RECIPE_ID_KEY, mRecipe_Id);

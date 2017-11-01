@@ -13,7 +13,7 @@ import android.view.View;
  * Created by Manolo on 10/10/2017.
  */
 
-public class StepDetailActivity extends AppCompatActivity {
+public class StepDetailActivity extends AppCompatActivity  implements StepsViewHolder.OnStepClickListener{
 
     StepDetailFragment stepDetailFragment;
     int stepIndex;
@@ -27,7 +27,7 @@ public class StepDetailActivity extends AppCompatActivity {
     private final String RECIPE_ID_KEY = "recipe_Id";
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
-    private final String FRAGMENT_TAG = "stepDetailFragment";
+    private final String STEP_DETAIL_FRAGMENT_TAG = "stepDetailFragment";
 
     private final int STEP_INDEX_DEFAULT_VALUE = -1;
     private final int RECIPE_ID_DEFAULT_VALUE = -1;
@@ -35,6 +35,8 @@ public class StepDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v(LOG_TAG, "onCreate");
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getSupportActionBar().hide();
@@ -44,9 +46,12 @@ public class StepDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_step_detail);
 
-        // only create a new fragment when it is not previously created
-        if (savedInstanceState == null) {
-            // get the shortDescription from the intent to title the activity
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        stepDetailFragment = (StepDetailFragment) fragmentManager
+                .findFragmentByTag(STEP_DETAIL_FRAGMENT_TAG);
+
+        if (stepDetailFragment == null) {
             Intent intent = getIntent();
             if (intent != null && intent.hasExtra(SHORT_DESCRIPTION_KEY)) {
                 shortDescription = intent.getStringExtra(SHORT_DESCRIPTION_KEY);
@@ -66,9 +71,6 @@ public class StepDetailActivity extends AppCompatActivity {
             // Instantiate the fragment for step details
             stepDetailFragment = new StepDetailFragment();
 
-            // Use the fragment manager and transaction to add the fragment to the screen
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
             // Add the step index and recipe _id to the bundle, to pass it to the fragment
             Bundle args = new Bundle();
             args.putInt(STEP_INDEX_KEY, stepIndex);
@@ -77,12 +79,8 @@ public class StepDetailActivity extends AppCompatActivity {
 
             // call the fragment manager to add the fragment
             fragmentManager.beginTransaction()
-                    .add(R.id.container, stepDetailFragment, FRAGMENT_TAG)
+                    .add(R.id.container, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG)
                     .commit();
-        } else {
-            shortDescription = savedInstanceState.getString(SHORT_DESCRIPTION_KEY);
-            stepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
-            recipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
         }
     }
 
@@ -105,7 +103,7 @@ public class StepDetailActivity extends AppCompatActivity {
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment, FRAGMENT_TAG)
+                .replace(R.id.container, newFragment, STEP_DETAIL_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -128,7 +126,29 @@ public class StepDetailActivity extends AppCompatActivity {
 
         // call the fragment manager to replace the old fragment with the new one
         fragmentManager.beginTransaction()
-                .replace(R.id.container, newFragment, FRAGMENT_TAG)
+                .replace(R.id.container, newFragment, STEP_DETAIL_FRAGMENT_TAG)
+                .commit();
+    }
+
+    @Override
+    public void onStepSelected(int stepId) {
+
+        Log.v(LOG_TAG, "onStepSelected");
+        stepIndex = stepId;
+
+        // Create new fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        StepDetailFragment newFragment = new StepDetailFragment();
+
+        // Add the step index and recipe _id to the bundle, to pass it to the fragment
+        Bundle args = new Bundle();
+        args.putInt(STEP_INDEX_KEY, stepIndex);
+        args.putInt(RECIPE_ID_KEY, recipe_Id);
+        newFragment.setArguments(args);
+
+        // call the fragment manager to replace the fragment
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, newFragment, STEP_DETAIL_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -136,12 +156,8 @@ public class StepDetailActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(SHORT_DESCRIPTION_KEY, shortDescription);
         outState.putInt(STEP_INDEX_KEY, stepIndex);
         outState.putInt(RECIPE_ID_KEY, recipe_Id);
-
-        Log.v(LOG_TAG, "onSaveInstanceState, shortDescription: " + shortDescription);
-        Log.v(LOG_TAG, "onSaveInstanceState, stepIndex: " + stepIndex);
-        Log.v(LOG_TAG, "onSaveInstanceState, recipe_Id: " + recipe_Id);
+        outState.putString(SHORT_DESCRIPTION_KEY, shortDescription);
     }
 }

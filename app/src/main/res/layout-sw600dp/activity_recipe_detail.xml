@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/master_detail_linear_layout"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RecipeDetailActivity">
+
+    <!--
+    This layout is a two-pane layout for the master/detail flow.
+    -->
+
+    <!-- container for RecipeDetailFragment -->
+    <FrameLayout
+        android:id="@+id/recipe_detail_container"
+        android:layout_width="400dp"
+        android:layout_height="match_parent" />
+
+    <!-- A small divider -->
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray" />
+
+    <!-- container for StepDetailFragment -->
+    <FrameLayout
+        android:id="@+id/step_detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

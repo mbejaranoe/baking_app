@@ -100,12 +100,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         @Override
         public void onClick(View view) {
 
-            Intent intent;
-            if (mContext.getResources().getConfiguration().smallestScreenWidthDp >= 600) { // tablet
-                intent = new Intent (view.getContext(), MasterDetailActivity.class);
-            } else { // phone
-                intent = new Intent(view.getContext(), RecipeDetailActivity.class);
-            }
+            Intent intent = new Intent(view.getContext(), RecipeDetailActivity.class);
 
             int adapterPosition = getAdapterPosition();
             Log.v("RecipeAdapter", "Adapter position: " + adapterPosition);

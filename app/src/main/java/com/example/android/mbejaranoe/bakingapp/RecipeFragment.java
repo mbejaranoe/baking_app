@@ -35,7 +35,6 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private RecyclerView mRecipeRecyclerView;
     private RecipeAdapter mRecipeAdapter;
     private RecyclerView.LayoutManager mRecipeLayoutManager;
-    private boolean mTwoPane;
 
     private static final int RECIPE_LOADER_ID = 22;
 
@@ -52,6 +51,8 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v(LOG_TAG, "onCreate");
 
         ConnectivityManager conMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
@@ -73,12 +74,10 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
         mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe);
         if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
-            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp >= 600");
-            mTwoPane = true;
+            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp >= 600 - tablet");
             mRecipeLayoutManager = new GridLayoutManager(getContext(), 3);
         } else {
-            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp < 600");
-            mTwoPane = false;
+            Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp < 600 - phone");
             mRecipeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         }
         mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);

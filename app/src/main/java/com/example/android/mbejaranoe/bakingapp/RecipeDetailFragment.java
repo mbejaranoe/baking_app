@@ -31,6 +31,7 @@ public class RecipeDetailFragment extends Fragment {
     private final String LOG_TAG = RecipeDetailFragment.class.getSimpleName();
 
     private final String RECIPE_ID_KEY = "recipe_Id";
+    private final String LAYOUT_MANAGER_STATE_KEY = "layoutManagerSavedInstanceState";
 
     public static final String[] DETAIL_RECIPE_PROJECTION = {
             RecipeEntry.COLUMN_INGREDIENTS,
@@ -38,9 +39,9 @@ public class RecipeDetailFragment extends Fragment {
     };
 
     // Member variables
-    public static Ingredient[] mIngredients;
-    public static Step[] mSteps;
-    public static int mRecipe_ID;
+    public Ingredient[] mIngredients;
+    public Step[] mSteps;
+    public int mRecipe_ID;
 
     private Parcelable layoutManagerSavedInstanceState;
 
@@ -58,6 +59,8 @@ public class RecipeDetailFragment extends Fragment {
 
         // retain this fragment
         setRetainInstance(true);
+
+        Log.v(LOG_TAG, "onCreate - setRetainInstance: true");
     }
 
     @Nullable
@@ -67,17 +70,29 @@ public class RecipeDetailFragment extends Fragment {
         // Inflate the Recipe detail fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
 
-        //if (savedInstanceState == null) {
-        if (savedInstanceState == null && getResources().getConfiguration().smallestScreenWidthDp < 600){
-            // Get the intent and its extras in order to get the recipe ingredients and steps
-            Intent intent = getActivity().getIntent();
-            if (intent.hasExtra(RECIPE_ID_KEY)) {
-                mRecipe_ID = intent.getIntExtra(RECIPE_ID_KEY, -1);
+        if (getResources().getConfiguration().smallestScreenWidthDp >= 600){ // tablet mode
+            Log.v(LOG_TAG, "onCreateView - tablet mode");
+            if (savedInstanceState == null) {
+                mRecipe_ID = getArguments().getInt(RECIPE_ID_KEY);
+                Log.v(LOG_TAG, "onCreateView - savedInstanceState: " + savedInstanceState);
+            } else {
+                mRecipe_ID = savedInstanceState.getInt(RECIPE_ID_KEY);
+                mRecipeDetailLayoutManager
+                        .onRestoreInstanceState(savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE_KEY));
+                Log.v(LOG_TAG, "onCreateView - savedInstanceState : NOT NULL");
             }
-            Log.v(LOG_TAG, "onCreateView - savedInstanceState NULL");
-        } else {
-            mRecipe_ID = getArguments().getInt(RECIPE_ID_KEY);
-            Log.v(LOG_TAG, "onCreateView - savedInstanceState NOT NULL");
+        } else { // phone mode
+            Log.v(LOG_TAG, "onCreateView - phone mode");
+            if (savedInstanceState == null) {
+                Intent intent = getActivity().getIntent();
+                mRecipe_ID = intent.getExtras().getInt(RECIPE_ID_KEY);
+                Log.v(LOG_TAG, "onCreateView - savedInstanceState: " + savedInstanceState);
+            } else {
+                mRecipe_ID = savedInstanceState.getInt(RECIPE_ID_KEY);
+                mRecipeDetailLayoutManager
+                        .onRestoreInstanceState(savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE_KEY));
+                Log.v(LOG_TAG, "onCreateView - savedInstanceState : NOT NULL");
+            }
         }
 
         updateRecipeDetails();
@@ -155,5 +170,13 @@ public class RecipeDetailFragment extends Fragment {
 
     public Parcelable getLayoutManagerSavedInstanceState(){
         return layoutManagerSavedInstanceState;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(RECIPE_ID_KEY, mRecipe_ID);
+        outState.putParcelable(LAYOUT_MANAGER_STATE_KEY, layoutManagerSavedInstanceState);
     }
 }
