@@ -58,8 +58,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
 
-    private final float PLAYBACK_SPEED = 0.25f;
-
     private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private ImageView stepDetailVideoPlaceholderImageView;
     private SimpleExoPlayer mSimpleExoPlayer;
@@ -152,6 +150,14 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         updateStepDetails();
 
         return rootView;
+    }
+
+    public int getRecipeId(){
+        return mRecipe_Id;
+    }
+
+    public int getStepIndex(){
+        return mStepIndex;
     }
 
     public void updateStepDetails(){

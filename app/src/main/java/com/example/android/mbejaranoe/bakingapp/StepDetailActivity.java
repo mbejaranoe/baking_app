@@ -81,6 +81,9 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
             fragmentManager.beginTransaction()
                     .add(R.id.container, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG)
                     .commit();
+        } else {
+            recipe_Id = stepDetailFragment.getRecipeId();
+            stepIndex = stepDetailFragment.getStepIndex();
         }
     }
 
@@ -120,6 +123,7 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
         Bundle args = new Bundle();
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
+
         newFragment.setArguments(args);
         Log.v(LOG_TAG, "Next button, stepIndex: " + stepIndex);
         Log.v(LOG_TAG, "Next button, recipe_Id: " + recipe_Id);
