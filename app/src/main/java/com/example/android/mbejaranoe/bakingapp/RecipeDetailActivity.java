@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
 
 /**
  * Created by Manolo on 09/10/2017.
@@ -109,10 +107,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
                 fragmentManager.beginTransaction()
                         .add(R.id.step_detail_container, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG)
                         .commit();
-
-                // Getting rid of the nav button bar that appears on phones for moving between steps
-                LinearLayout navButtonsLinearLayout = (LinearLayout) findViewById(R.id.nav_buttons_linear_layout);
-                navButtonsLinearLayout.setVisibility(View.GONE);
             }
         } else { // phone mode
             mTwoPane = false;
