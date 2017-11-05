@@ -1,11 +1,14 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 /**
  * Created by Manolo on 09/10/2017.
@@ -107,6 +110,14 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
                 fragmentManager.beginTransaction()
                         .add(R.id.step_detail_container, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG)
                         .commit();
+            }
+
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                FrameLayout recipeDetailContainer = (FrameLayout) findViewById(R.id.recipe_detail_container);
+                if (recipeDetailContainer != null) {
+                    int screenWidthDp = getResources().getConfiguration().screenWidthDp;
+                    recipeDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(screenWidthDp/3, -1));
+                }
             }
         } else { // phone mode
             mTwoPane = false;
