@@ -75,7 +75,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe);
         if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp >= 600 - tablet");
-            mRecipeLayoutManager = new GridLayoutManager(getContext(), 3);
+            mRecipeLayoutManager = new GridLayoutManager(getContext(), 2);
         } else {
             Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp < 600 - phone");
             mRecipeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);

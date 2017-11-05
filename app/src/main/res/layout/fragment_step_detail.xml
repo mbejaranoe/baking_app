@@ -7,14 +7,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/step_detail_video_placeholder_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:layout_weight="5"
-        tools:src="@drawable/recipestepplaceholder_black"/>
-
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/step_detail_simple_exoplayer_view"
         android:layout_width="match_parent"
@@ -35,7 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:gravity="bottom">
 
         <Button
             android:id="@+id/prev_step_button"
