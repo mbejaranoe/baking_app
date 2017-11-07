@@ -66,26 +66,6 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onClick(View view) {
-        /*
-        if (view.getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) {
-            // change StepDetailFragment to show the new step details
-            int stepIndex = getAdapterPosition() - numIngred;
-            mcallback.onStepSelected(stepIndex);
-            // marcar el step en color --> see Sunshine
-        } else {
-            Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
-            // pass the recipe _id in order to query the content provider to obtain the json string with steps
-            intent.putExtra("recipe_Id", recipe_Id);
-            Log.v("StepsViewHolder", "-onClick recipe_Id: " + recipe_Id);
-            // pass the step index in order to access the item in the Step[] and retrieve the correct info
-            // to populate the views
-            int stepIndex = getAdapterPosition() - numIngred;
-            intent.putExtra("stepIndex", stepIndex);
-            Log.v("StepsViewHolder", "-onClick step index: " + stepIndex);
-            intent.putExtra("shortDescription", stepShortDescriptionTextView.getText());
-            view.getContext().startActivity(intent);
-        }
-         */
         int stepIndex = getAdapterPosition() - numIngred;
         mcallback.onStepSelected(stepIndex);
     }

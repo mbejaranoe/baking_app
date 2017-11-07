@@ -113,10 +113,17 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
             }
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                int screenWidthDp = getResources().getConfiguration().screenWidthDp;
+
                 FrameLayout recipeDetailContainer = (FrameLayout) findViewById(R.id.recipe_detail_container);
                 if (recipeDetailContainer != null) {
-                    int screenWidthDp = getResources().getConfiguration().screenWidthDp;
-                    recipeDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(screenWidthDp/3, -1));
+                    int recipeDetailWidth= screenWidthDp/3;
+                    recipeDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(recipeDetailWidth, -1));
+                }
+                FrameLayout stepDetailContainer = (FrameLayout) findViewById(R.id.step_detail_container);
+                if (stepDetailContainer != null) {
+                    int stepDetailWidth = (screenWidthDp/3) * 2;
+                    stepDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(stepDetailWidth, -1));
                 }
             }
         } else { // phone mode

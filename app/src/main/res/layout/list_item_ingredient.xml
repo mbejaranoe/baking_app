@@ -5,38 +5,41 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    card_view:cardUseCompatPadding="true"
-    card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="5dp"
+    android:layout_height="wrap_content"
+    android:minHeight="70dp"
+    style="@style/smallCardViews"
     android:id="@+id/ingredient_card_view">
 
     <TextView
         android:id="@+id/ingredient_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|left"
-        android:layout_marginLeft="8dp"
-        tools:text="Maizena"/>
+        android:layout_gravity="center_vertical|start"
+        android:layout_margin="@dimen/margin_normal"
+        android:padding="@dimen/padding_normal"
+        style="@style/TextAppearance.AppCompat.Medium"
+        tools:text="Necesito poner aquí un nombre lo bastante largo como para poder trabajar con él y que por lo menos ocupe dos líneas, tampoco más"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="center_vertical|right"
-        android:layout_marginRight="8dp">
+        android:layout_gravity="center_vertical|end"
+        android:layout_margin="@dimen/margin_normal"
+        android:padding="@dimen/padding_normal">
 
         <TextView
             android:id="@+id/quantity_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="4dp"
+            style="@style/TextAppearance.AppCompat.Medium"
             tools:text="34"/>
 
         <TextView
             android:id="@+id/measure_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/TextAppearance.AppCompat.Medium"
             tools:text="CUP"/>
 
     </LinearLayout>
