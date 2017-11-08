@@ -12,26 +12,24 @@
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/step_detail_simple_exoplayer_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:layout_weight="5"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/step_detail_description_text_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:visibility="visible"
         tools:text="@string/dummy_description"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_weight="4"/>
+        style="@style/TextAppearance.AppCompat.Medium"/>
 
     <LinearLayout
         android:id="@+id/nav_buttons_linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="1"
-        android:gravity="bottom">
+        android:layout_gravity="bottom">
 
         <Button
             android:id="@+id/prev_step_button"

@@ -1,2 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Cocíname</string>
+    <string name="offline_status_recipe_info_message">Imposible recuperar la información de las recetas, no estás conectado a internet.</string>
+    <string name="title_activity_recipe_detail">Detalles de la receta</string>
+    <string name="title_activity_step_detail">Detalles del paso</string>
+    <string name="no_step_description_message">No hay detalles de este paso, ¡así que debe ser muy fácil!</string>
+    <string name="prev_step_button">Anterior</string>
+    <string name="next_step_button">Siguiente</string>
+    <string name="title_activity_master_detail">Detalles de la receta</string>
+    <string name="recipe_name">Sopa de caracol</string>
+    <string name="dummy_description">Submission and Evaluation
+        Your project will be evaluated by a Udacity Code Reviewer according to this rubric . Be sure to review it thoroughly before you submit. All criteria must "meet specifications" in order to pass.
+
+        Note: Please make sure you clean your project before creating a zip file or pushing code to a GitHub repository. You can clean your project by following the instructions given in this link.
+
+        If you are using GitHub to host your projects, please make sure the code you want to submit for review is in the master branch of your repository.
+
+        IMPORTANT: If you're submitting via a public Github repository, please make sure any external API key that you utilize, has been removed from your code. It's highly unsafe (and often breaks the Terms of Service) to include API keys in public repos, so you need to remove yours. You can add a note in a README file where a reviewer should go to insert their API key. Reviewers have been trained to expect this situation.
+
+        IMPORTANT: Make sure not to forget to move all the hardcoded Strings in your project to the strings.xml file. If you are unsure how to do this, revisit this video in Advanced Android Apps.
+
+        If you have any problems submitting your project, please email us at android-project@udacity.com. Due to the high volume of submissions, the turnaround for your project can take up to a week.
+
+        Each Android ND project will be reviewed against the Common Project Requirements, in addition to its project-specific rubric.</string>
+
+
+</resources>
