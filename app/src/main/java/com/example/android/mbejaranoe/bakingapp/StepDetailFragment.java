@@ -3,6 +3,7 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -206,6 +207,10 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         // get the smallestScreenWidth
         int smallestScreenWidthDp = getResources().getConfiguration().smallestScreenWidthDp;
 
+        stepDetailSimpleExoPlayerView.setUseArtwork(true);
+        stepDetailSimpleExoPlayerView
+                .setDefaultArtwork(BitmapFactory.decodeResource(getResources()
+                        , R.drawable.recipestepplaceholder_black));
         if (smallestScreenWidthDp < 600) { // phone mode
             if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
 
@@ -391,7 +396,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
                                 PlaybackStateCompat.ACTION_PAUSE |
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
                                 PlaybackStateCompat.ACTION_PLAY_PAUSE);
 
         mMediaSession.setPlaybackState(mStateBuilder.build());
