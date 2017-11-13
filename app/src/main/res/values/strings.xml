@@ -22,4 +22,6 @@
         If you have any problems submitting your project, please email us at android-project@udacity.com. Due to the high volume of submissions, the turnaround for your project can take up to a week.
 
         Each Android ND project will be reviewed against the Common Project Requirements, in addition to its project-specific rubric.</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

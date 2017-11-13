@@ -9,10 +9,9 @@
     <!-- Permission to use the RecipeContentProvider. -->
     <uses-permission android:name="com.example.android.mbejaranoe.bakingapp.data.RecipeContentProvider"/>
 
-
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -44,11 +43,22 @@
         </activity>
 
         <provider
+            android:name=".data.RecipeContentProvider"
             android:authorities="com.example.android.mbejaranoe.bakingapp"
-            android:name="com.example.android.mbejaranoe.bakingapp.data.RecipeContentProvider"
-            android:exported="false" />
+            android:exported="true" />
+
+        <receiver android:name=".RecipeWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recipe_widget_info" />
+        </receiver>
+
+        <service android:name=".RecipeWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
-    
-    
 
 </manifest>

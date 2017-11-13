@@ -3,6 +3,7 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
+import com.example.android.mbejaranoe.bakingapp.utilities.NetworkUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -207,10 +209,16 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         // get the smallestScreenWidth
         int smallestScreenWidthDp = getResources().getConfiguration().smallestScreenWidthDp;
 
+        // populate the thumbnail view
         stepDetailSimpleExoPlayerView.setUseArtwork(true);
-        stepDetailSimpleExoPlayerView
-                .setDefaultArtwork(BitmapFactory.decodeResource(getResources()
-                        , R.drawable.recipestepplaceholder_black));
+        Bitmap artwork = null;
+        if (step.getThumbnailURL().equals("") || (NetworkUtils.getImageFromURL(step.getThumbnailURL()) == null)) {
+            artwork = BitmapFactory.decodeResource(getResources(), R.drawable.recipestepplaceholder_black);
+        } else {
+            artwork = NetworkUtils.getImageFromURL(step.getThumbnailURL());
+        }
+        stepDetailSimpleExoPlayerView.setDefaultArtwork(artwork);
+
         if (smallestScreenWidthDp < 600) { // phone mode
             if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) { // portrait mode
 
