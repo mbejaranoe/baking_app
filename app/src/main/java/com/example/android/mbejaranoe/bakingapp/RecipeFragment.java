@@ -40,7 +40,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final String BUNDLE_RECYCLER_LAYOUT = "RecipeFragment.recycler.layout";
 
-    public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry._ID,
+    public static final String[] FRAGMENT_RECIPE_PROJECTION = {RecipeContract.RecipeEntry.COLUMN_RECIPE_ID,
             RecipeContract.RecipeEntry.COLUMN_NAME, RecipeContract.RecipeEntry.COLUMN_SERVINGS,
             RecipeContract.RecipeEntry.COLUMN_IMAGE_URL};
 

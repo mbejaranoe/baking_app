@@ -63,7 +63,7 @@ public class RecipeContentProvider extends ContentProvider {
                 break;
             case RECIPES_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                String mSelection = "_id=?";
+                String mSelection = "recipe_id=?";
                 String[] mSelectionArgs = new String[]{id};
                 retCursor = db.query(RecipeEntry.TABLE_NAME,
                         projection,

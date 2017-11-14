@@ -113,7 +113,7 @@ public class RecipeDetailFragment extends Fragment {
         // Query the Content Provider
         Cursor cursorRecipe;
         String[] projection = DETAIL_RECIPE_PROJECTION;
-        String selection = RecipeEntry._ID + "=?";
+        String selection = RecipeEntry.COLUMN_RECIPE_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(mRecipe_ID)};
         Log.v(LOG_TAG, "updateRecipeDetails - mRecipe_ID: " + mRecipe_ID);
 

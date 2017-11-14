@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 /**
@@ -33,6 +34,7 @@ public class RecipeWidget extends AppWidgetProvider {
         // Set the text for the widget header
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String recipeName = sharedPreferences.getString("name", "none");
+        Log.v(RecipeWidget.class.getSimpleName(), "recipeName: " + recipeName);
         views.setTextViewText(R.id.widget_header_text_view, recipeName);
 
         // Instruct the widget manager to update the widget

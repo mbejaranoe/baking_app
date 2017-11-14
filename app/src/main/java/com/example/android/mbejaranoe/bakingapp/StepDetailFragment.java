@@ -160,7 +160,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mCursor = getContext().getContentResolver().query(
                 RecipeEntry.CONTENT_URI,
                 null,
-                "_id=?",
+                RecipeEntry.COLUMN_RECIPE_ID + "=?",
                 new String[]{String.valueOf(mRecipe_Id)},
                 null);
 

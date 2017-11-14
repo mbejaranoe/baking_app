@@ -10,8 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -143,27 +141,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
         Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
         widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         sendBroadcast(widgetIntent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.recipe_detail_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemThatWasClickedId = item.getItemId();
-        if (itemThatWasClickedId == R.id.action_send_to_widget) {
-            // update the widget
-            Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
-            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            sendBroadcast(widgetIntent);
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     // define the behavior for onStepSelected

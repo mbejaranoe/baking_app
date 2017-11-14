@@ -35,42 +35,44 @@ public class RecipeWidgetDataProvider implements RemoteViewsService.RemoteViewsF
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         recipe_Id = sharedPreferences.getInt(RECIPE_ID_KEY, -1);
+        Log.v(LOG_TAG, "recipe_Id: " + recipe_Id);
 
-        // Query the Content Provider
-        Cursor cursorRecipe;
-        String[] projection = {RecipeEntry.COLUMN_NAME, RecipeEntry.COLUMN_INGREDIENTS};
-        String selection = RecipeEntry._ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(recipe_Id)};
-        Log.v(LOG_TAG, "getIngredients - recipe_Id: " + recipe_Id);
+        if (recipe_Id != -1) {
+            // Query the Content Provider
+            Cursor cursorRecipe;
+            String[] projection = {RecipeEntry.COLUMN_INGREDIENTS};
+            String selection = RecipeEntry.COLUMN_RECIPE_ID + "=?";
+            String[] selectionArgs = new String[]{String.valueOf(recipe_Id)};
+            Log.v(LOG_TAG, "getIngredients - recipe_Id: " + recipe_Id);
 
-        cursorRecipe = context.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
-                projection, // projection,
-                selection,  // selection,
-                selectionArgs, // selectionArgs,
-                null);
+            cursorRecipe = context.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
+                    projection, // projection,
+                    selection,  // selection,
+                    selectionArgs, // selectionArgs,
+                    null);
 
-        cursorRecipe.moveToFirst();
-
-        // Get the ingredients in String format, as it was stored in the Content Provider
-        String ingredientsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_INGREDIENTS));
-        // Parse the String to get the ingredients into an array
-        JSONArray ingredientsJsonArray = null;
-        try {
-            ingredientsJsonArray = new JSONArray(ingredientsString);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
-        }
-        ingredients = new Ingredient[ingredientsJsonArray.length()];
-        for (int i = 0; i < ingredientsJsonArray.length(); i++) {
-            try {
-                ingredients[i] = new Ingredient(ingredientsJsonArray.getJSONObject(i));
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+            if (cursorRecipe.moveToFirst()) {
+                // Get the ingredients in String format, as it was stored in the Content Provider
+                String ingredientsString = cursorRecipe.getString(cursorRecipe.getColumnIndex(RecipeEntry.COLUMN_INGREDIENTS));
+                // Parse the String to get the ingredients into an array
+                JSONArray ingredientsJsonArray = null;
+                try {
+                    ingredientsJsonArray = new JSONArray(ingredientsString);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+                }
+                ingredients = new Ingredient[ingredientsJsonArray.length()];
+                for (int i = 0; i < ingredientsJsonArray.length(); i++) {
+                    try {
+                        ingredients[i] = new Ingredient(ingredientsJsonArray.getJSONObject(i));
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, "Error parsing string to JSONArray: " + ingredientsString);
+                    }
+                }
+                Log.v(LOG_TAG, "Retrieved " + ingredients.length + " ingredients!");
             }
+            cursorRecipe.close();
         }
-        Log.v(LOG_TAG, "Retrieved " + ingredients.length + " ingredients!");
-
-        cursorRecipe.close();
     }
 
     public RecipeWidgetDataProvider(Context context, Intent intent) {
