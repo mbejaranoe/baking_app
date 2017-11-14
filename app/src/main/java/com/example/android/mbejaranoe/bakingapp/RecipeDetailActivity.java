@@ -1,12 +1,17 @@
 package com.example.android.mbejaranoe.bakingapp;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -129,6 +134,36 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
         } else { // phone mode
             mTwoPane = false;
         }
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(RECIPE_ID_KEY, recipe_Id).apply();
+        editor.putString(RECIPE_NAME_KEY, recipeName).apply();
+
+        Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
+        widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        sendBroadcast(widgetIntent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.recipe_detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemThatWasClickedId = item.getItemId();
+        if (itemThatWasClickedId == R.id.action_send_to_widget) {
+            // update the widget
+            Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
+            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            sendBroadcast(widgetIntent);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // define the behavior for onStepSelected

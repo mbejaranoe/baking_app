@@ -5,7 +5,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
@@ -27,6 +29,12 @@ public class RecipeWidget extends AppWidgetProvider {
         } else {
             setRemoteAdapterV11(context, views);
         }
+
+        // Set the text for the widget header
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String recipeName = sharedPreferences.getString("name", "none");
+        views.setTextViewText(R.id.widget_header_text_view, recipeName);
+
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

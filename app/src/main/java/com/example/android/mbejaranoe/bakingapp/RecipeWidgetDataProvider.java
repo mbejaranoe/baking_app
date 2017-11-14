@@ -2,7 +2,9 @@ package com.example.android.mbejaranoe.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -22,17 +24,22 @@ public class RecipeWidgetDataProvider implements RemoteViewsService.RemoteViewsF
 
     private final String LOG_TAG = RecipeWidgetDataProvider.class.getSimpleName();
 
+    private final String RECIPE_ID_KEY = "recipe_Id";
+
     private Ingredient[] ingredients;
     private int recipe_Id;
     private Context context;
     private Intent intent;
 
-    private void getIngredients() {
+    private void getRecipeData() {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        recipe_Id = sharedPreferences.getInt(RECIPE_ID_KEY, -1);
 
         // Query the Content Provider
         Cursor cursorRecipe;
-        String[] projection = {RecipeEntry.COLUMN_INGREDIENTS};
-        String selection = RecipeEntry.COLUMN_RECIPE_ID + "=?";
+        String[] projection = {RecipeEntry.COLUMN_NAME, RecipeEntry.COLUMN_INGREDIENTS};
+        String selection = RecipeEntry._ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(recipe_Id)};
         Log.v(LOG_TAG, "getIngredients - recipe_Id: " + recipe_Id);
 
@@ -73,12 +80,12 @@ public class RecipeWidgetDataProvider implements RemoteViewsService.RemoteViewsF
 
     @Override
     public void onCreate() {
-        getIngredients();
+        // getRecipeData();
     }
 
     @Override
     public void onDataSetChanged() {
-        getIngredients();
+        getRecipeData();
     }
 
     @Override
@@ -97,7 +104,7 @@ public class RecipeWidgetDataProvider implements RemoteViewsService.RemoteViewsF
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.list_item_widget);
 
-        getIngredients();
+        getRecipeData();
 
         remoteViews.setTextViewText(R.id.widget_ingredient_name_text_view,
                 ingredients[position].getIngredient());
