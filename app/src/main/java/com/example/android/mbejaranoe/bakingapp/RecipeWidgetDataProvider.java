@@ -97,7 +97,7 @@ public class RecipeWidgetDataProvider implements RemoteViewsService.RemoteViewsF
 
     @Override
     public int getCount() {
-        return ingredients.length;
+        return (ingredients != null) ? ingredients.length : 0;
     }
 
     @Override

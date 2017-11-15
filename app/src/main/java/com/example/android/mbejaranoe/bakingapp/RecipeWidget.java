@@ -34,8 +34,14 @@ public class RecipeWidget extends AppWidgetProvider {
         // Set the text for the widget header
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String recipeName = sharedPreferences.getString("name", "none");
+        int recipe_Id = sharedPreferences.getInt("recipe_Id", -1);
         Log.v(RecipeWidget.class.getSimpleName(), "recipeName: " + recipeName);
-        views.setTextViewText(R.id.widget_header_text_view, recipeName);
+        if (recipeName.equals("none") || recipe_Id == -1) {
+            views.setTextViewText(R.id.widget_header_text_view,
+                    context.getResources().getString(R.string.widget_message_no_recipe_selected));
+        } else {
+            views.setTextViewText(R.id.widget_header_text_view, recipeName);
+        }
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
