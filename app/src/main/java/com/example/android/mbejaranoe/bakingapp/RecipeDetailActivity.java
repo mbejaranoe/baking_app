@@ -1,7 +1,6 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -143,10 +142,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
 
         Intent widgetIntent = new Intent(this, RecipeWidget.class);
         widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        ComponentName widget = new ComponentName(getApplication(), RecipeWidget.class);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] ids = appWidgetManager.getAppWidgetIds(widget);
-        widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(widgetIntent);
     }
 

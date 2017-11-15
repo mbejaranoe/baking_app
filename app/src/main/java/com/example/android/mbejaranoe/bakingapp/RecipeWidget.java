@@ -67,11 +67,7 @@ public class RecipeWidget extends AppWidgetProvider {
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
             // This is how you populate the data.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                setRemoteAdapter(context, views);
-            } else {
-                setRemoteAdapterV11(context, views);
-            }
+            views.setRemoteAdapter(R.id.widget_list, intent);
 
             // Set the text for the widget header
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -96,7 +92,7 @@ public class RecipeWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
-            ComponentName widget = new ComponentName(context, RecipeWidgetDataProvider.class);
+            ComponentName widget = new ComponentName(context, RecipeWidget.class);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] ids = appWidgetManager.getAppWidgetIds(widget);
             onUpdate(context, appWidgetManager, ids);
