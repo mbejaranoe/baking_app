@@ -1,6 +1,7 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -137,9 +138,21 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(RECIPE_ID_KEY, recipe_Id).apply();
         editor.putString(RECIPE_NAME_KEY, recipeName).apply();
+        Log.v(LOG_TAG, "recipe_Id for sharedPrefs: " + recipe_Id);
+        Log.v(LOG_TAG, "recipeName for sharedPrefs: " + recipeName);
 
         Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
         widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = AppWidgetManager.getInstance(this)
+                .getAppWidgetIds(new ComponentName(getApplication(), RecipeWidgetDataProvider.class));
+        if (ids != null) {
+            for (int i : ids) {
+                Log.v(LOG_TAG, "Widget id: "+ i);
+            }
+        } else {
+            Log.v(LOG_TAG, "Widget id: NULL");
+        }
+        widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(widgetIntent);
     }
 
