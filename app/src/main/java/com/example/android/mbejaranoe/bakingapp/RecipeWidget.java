@@ -3,6 +3,7 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,6 +53,18 @@ public class RecipeWidget extends AppWidgetProvider {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
+        if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+            ComponentName widget = new ComponentName(context, RecipeWidgetDataProvider.class);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] ids = appWidgetManager.getAppWidgetIds(widget);
+            onUpdate(context, appWidgetManager, ids);
         }
     }
 
