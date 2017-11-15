@@ -141,17 +141,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
         Log.v(LOG_TAG, "recipe_Id for sharedPrefs: " + recipe_Id);
         Log.v(LOG_TAG, "recipeName for sharedPrefs: " + recipeName);
 
-        Intent widgetIntent = new Intent(this, RecipeWidgetDataProvider.class);
+        Intent widgetIntent = new Intent(this, RecipeWidget.class);
         widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = AppWidgetManager.getInstance(this)
-                .getAppWidgetIds(new ComponentName(getApplication(), RecipeWidgetDataProvider.class));
-        if (ids != null) {
-            for (int i : ids) {
-                Log.v(LOG_TAG, "Widget id: "+ i);
-            }
-        } else {
-            Log.v(LOG_TAG, "Widget id: NULL");
-        }
+        ComponentName widget = new ComponentName(getApplication(), RecipeWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] ids = appWidgetManager.getAppWidgetIds(widget);
         widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(widgetIntent);
     }
