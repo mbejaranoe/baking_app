@@ -96,6 +96,7 @@ public class RecipeWidget extends AppWidgetProvider {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] ids = appWidgetManager.getAppWidgetIds(widget);
             onUpdate(context, appWidgetManager, ids);
+            appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
         }
     }
 
