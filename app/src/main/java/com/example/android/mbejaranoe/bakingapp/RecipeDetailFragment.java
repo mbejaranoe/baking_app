@@ -21,6 +21,10 @@ import com.example.android.mbejaranoe.bakingapp.data.Step;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by Manolo on 09/10/2017.
  * Fragment to show the recipe details
@@ -45,9 +49,10 @@ public class RecipeDetailFragment extends Fragment {
 
     private Parcelable layoutManagerSavedInstanceState;
 
-    private RecyclerView mRecipeDetailRecyclerView;
+    @BindView(R.id.recyclerview_recipe_detail) RecyclerView mRecipeDetailRecyclerView;
     private RecipeDetailAdapter mRecipeDetailAdapter;
     private RecyclerView.LayoutManager mRecipeDetailLayoutManager;
+    private Unbinder unbinder;
 
     // Constructor
     public RecipeDetailFragment(){
@@ -69,6 +74,8 @@ public class RecipeDetailFragment extends Fragment {
 
         // Inflate the Recipe detail fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+
+        unbinder = ButterKnife.bind(this, rootView);
 
         if (getResources().getConfiguration().smallestScreenWidthDp >= 600){ // tablet mode
             Log.v(LOG_TAG, "onCreateView - tablet mode");
@@ -97,7 +104,6 @@ public class RecipeDetailFragment extends Fragment {
 
         updateRecipeDetails();
 
-        mRecipeDetailRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe_detail);
         mRecipeDetailLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         mRecipeDetailRecyclerView.setLayoutManager(mRecipeDetailLayoutManager);
 
@@ -106,6 +112,12 @@ public class RecipeDetailFragment extends Fragment {
         layoutManagerSavedInstanceState = mRecipeDetailRecyclerView.getLayoutManager().onSaveInstanceState();
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public void updateRecipeDetails(){

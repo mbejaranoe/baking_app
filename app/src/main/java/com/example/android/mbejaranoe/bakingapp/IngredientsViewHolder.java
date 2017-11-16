@@ -6,6 +6,9 @@ import android.widget.TextView;
 
 import com.example.android.mbejaranoe.bakingapp.data.Ingredient;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Manolo on 10/10/2017.
  * ViewHolder for ingredients
@@ -15,16 +18,14 @@ public class IngredientsViewHolder extends RecyclerView.ViewHolder {
 
     private final String LOG_TAG = IngredientsViewHolder.class.getSimpleName();
 
-    private TextView ingredientNameTextView;
-    private TextView quantityTextView;
-    private TextView measureTextView;
+    @BindView(R.id.ingredient_name_text_view) TextView ingredientNameTextView;
+    @BindView(R.id.quantity_text_view) TextView quantityTextView;
+    @BindView(R.id.measure_text_view) TextView measureTextView;
 
     public IngredientsViewHolder(View itemView) {
         super(itemView);
 
-        ingredientNameTextView = (TextView) itemView.findViewById(R.id.ingredient_name_text_view);
-        quantityTextView = (TextView) itemView.findViewById(R.id.quantity_text_view);
-        measureTextView = (TextView) itemView.findViewById(R.id.measure_text_view);
+        ButterKnife.bind(this, itemView);
     }
 
     public static void setIngredientsViewHolder(IngredientsViewHolder holder, Ingredient  ingredient){

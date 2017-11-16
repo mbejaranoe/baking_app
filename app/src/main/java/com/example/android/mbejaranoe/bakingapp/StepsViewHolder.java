@@ -9,6 +9,9 @@ import android.widget.TextView;
 import com.example.android.mbejaranoe.bakingapp.data.Step;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Manolo on 10/10/2017.
  * ViewHolder for steps
@@ -16,8 +19,8 @@ import com.squareup.picasso.Picasso;
 
 public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private ImageView stepThumbnailImageView;
-    private TextView stepShortDescriptionTextView;
+    @BindView(R.id.step_thumbnail_image_view) ImageView stepThumbnailImageView;
+    @BindView (R.id.step_short_description_text_view) TextView stepShortDescriptionTextView;
     private int numIngred;
     private int recipe_Id;
 
@@ -31,8 +34,7 @@ public class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public StepsViewHolder(View itemView) {
         super(itemView);
 
-        stepThumbnailImageView = (ImageView) itemView.findViewById(R.id.step_thumbnail_image_view);
-        stepShortDescriptionTextView = (TextView) itemView.findViewById(R.id.step_short_description_text_view);
+        ButterKnife.bind(this, itemView);
 
         itemView.setOnClickListener(this);
 

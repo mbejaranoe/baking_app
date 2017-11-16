@@ -15,6 +15,9 @@ import android.widget.TextView;
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract.RecipeEntry;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Manolo on 04/10/2017.
  * Adapter to show in the screen the recipes
@@ -79,19 +82,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
     // ViewHolder class
     public class RecipeAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private CardView recipeCardView;
-        private ImageView recipeImageView;
-        private TextView recipeNameTextView;
-        private TextView recipeServingsTextView;
+        @BindView(R.id.recipe_card_view) CardView recipeCardView;
+        @BindView(R.id.recipe_image_view) ImageView recipeImageView;
+        @BindView(R.id.recipe_name_text_view) TextView recipeNameTextView;
+        @BindView(R.id.recipe_servings_text_view) TextView recipeServingsTextView;
 
         // Constructor
         public RecipeAdapterViewHolder(View itemView) {
             super(itemView);
 
-            recipeCardView = (CardView) itemView.findViewById(R.id.recipe_card_view);
-            recipeImageView = (ImageView) itemView.findViewById(R.id.recipe_image_view);
-            recipeNameTextView = (TextView) itemView.findViewById(R.id.recipe_name_text_view);
-            recipeServingsTextView = (TextView) itemView.findViewById(R.id.recipe_servings_text_view);
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(this);
         }

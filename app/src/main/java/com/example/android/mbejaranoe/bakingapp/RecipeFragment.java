@@ -23,6 +23,10 @@ import android.widget.Toast;
 
 import com.example.android.mbejaranoe.bakingapp.data.RecipeContract;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by Manolo on 29/09/2017.
  * Fragment to show the recipes
@@ -32,9 +36,10 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     private final String LOG_TAG = RecipeFragment.class.getSimpleName();
 
-    private RecyclerView mRecipeRecyclerView;
+    @BindView(R.id.recyclerview_recipe) RecyclerView mRecipeRecyclerView;
     private RecipeAdapter mRecipeAdapter;
     private RecyclerView.LayoutManager mRecipeLayoutManager;
+    private Unbinder unbinder;
 
     private static final int RECIPE_LOADER_ID = 22;
 
@@ -72,7 +77,8 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         // Inflate the Recipe fragment layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_recipe);
+        unbinder = ButterKnife.bind(this, rootView);
+
         if (getResources().getConfiguration().smallestScreenWidthDp >= 600) {
             Log.v(LOG_TAG, "onCreateView - smallestScreenWidthDp >= 600 - tablet");
             mRecipeLayoutManager = new GridLayoutManager(getContext(), 2);
@@ -100,6 +106,12 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     public void onStart() {
         super.onStart();
         updateRecipes();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     @Override

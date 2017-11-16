@@ -43,6 +43,10 @@ import com.google.android.exoplayer2.util.Util;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 import static com.google.android.exoplayer2.mediacodec.MediaCodecInfo.TAG;
 
 /**
@@ -59,12 +63,13 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
 
-    private SimpleExoPlayerView stepDetailSimpleExoPlayerView;
+    @BindView(R.id.step_detail_simple_exoplayer_view) SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private SimpleExoPlayer mSimpleExoPlayer;
-    private TextView stepDetailDescriptionTextView;
-    private LinearLayout navButtonsLinearLayout;
-    private Button prevStepButton;
-    private Button nextStepButton;
+    @BindView(R.id.step_detail_description_text_view) TextView stepDetailDescriptionTextView;
+    @BindView(R.id.nav_buttons_linear_layout) LinearLayout navButtonsLinearLayout;
+    @BindView(R.id.prev_step_button) Button prevStepButton;
+    @BindView(R.id.next_step_button) Button nextStepButton;
+    private Unbinder unbinder;
 
     private Step[] mSteps;
     private int mStepIndex;
@@ -92,13 +97,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
-        stepDetailSimpleExoPlayerView = (SimpleExoPlayerView) rootView
-                .findViewById(R.id.step_detail_simple_exoplayer_view);
-        stepDetailDescriptionTextView = (TextView) rootView
-                .findViewById(R.id.step_detail_description_text_view);
-        navButtonsLinearLayout = (LinearLayout) rootView.findViewById(R.id.nav_buttons_linear_layout);
-        prevStepButton = (Button) rootView.findViewById(R.id.prev_step_button);
-        nextStepButton = (Button) rootView.findViewById(R.id.next_step_button);
+        unbinder = ButterKnife.bind(this, rootView);
 
         if (getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) { // tablet mode
             if (savedInstanceState == null) {
@@ -332,14 +331,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         if (mMediaSession != null) {
             mMediaSession.setActive(false);
         }
+        unbinder.unbind();
     }
-
-    /*
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-    */
 
     @Override
     public void onStop() {
