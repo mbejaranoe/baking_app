@@ -6,8 +6,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="200dp"
+    android:minWidth="@dimen/accessibility_minWidth"
+    android:minHeight="@dimen/accessibility_minHeight"
     style="@style/smallCardViews"
-    android:id="@+id/ingredient_card_view">
+    android:id="@+id/ingredient_card_view"
+    android:layout_marginBottom="@dimen/accessibility_touch_spacing">
 
     <ImageView
         android:id="@+id/step_thumbnail_image_view"

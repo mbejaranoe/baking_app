@@ -9,4 +9,12 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_header_padding">8dp</dimen>
+
+    <!-- Touch targets dimensions for accessibility -->
+    <dimen name="accessibility_minWidth">48dp</dimen>
+    <dimen name="accessibility_minHeight">48dp</dimen>
+
+    <!-- Touch targets spacing dimension for accessibility -->
+    <dimen name="accessibility_touch_spacing">8dp</dimen>
+
 </resources>

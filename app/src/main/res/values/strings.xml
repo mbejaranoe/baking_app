@@ -23,4 +23,5 @@
 
         Each Android ND project will be reviewed against the Common Project Requirements, in addition to its project-specific rubric.</string>
     <string name="widget_message_no_recipe_selected">No recipe selected</string>
+    <string name="accessibility_servings">Servings</string>
 </resources>

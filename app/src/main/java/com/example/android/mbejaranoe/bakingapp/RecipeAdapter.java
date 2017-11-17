@@ -66,6 +66,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         }
         holder.recipeNameTextView.setText(mCursor.getString(nameIndex));
         holder.recipeServingsTextView.setText(mCursor.getString(servingsIndex));
+        String contentDescriptionText = mCursor.getString(servingsIndex) + " " + mContext.getResources().getString(R.string.accessibility_servings);
+        holder.recipeServingsTextView.setContentDescription(contentDescriptionText);
     }
 
     // Required Adapter method

@@ -6,13 +6,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="300dp"
+    android:minWidth="@dimen/accessibility_minWidth"
+    android:minHeight="@dimen/accessibility_minHeight"
     style="@style/largeCardViews"
     android:id="@+id/recipe_card_view"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:layout_marginLeft="5dp"
-    android:layout_marginStart="5dp">
+    android:layout_marginStart="5dp"
+    android:layout_marginBottom="@dimen/accessibility_touch_spacing">
 
     <ImageView
         android:id="@+id/recipe_image_view"
