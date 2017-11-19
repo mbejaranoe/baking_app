@@ -344,6 +344,16 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        releasePlayer();
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+        }
+    }
+
     /**
      * Initialize ExoPlayer.
      */
