@@ -22,7 +22,8 @@
         android:layout_weight="1"
         android:visibility="visible"
         tools:text="@string/dummy_description"
-        style="@style/TextAppearance.AppCompat.Medium"/>
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorPrimary"/>
 
     <LinearLayout
         android:id="@+id/nav_buttons_linear_layout"
@@ -34,7 +35,7 @@
         <Button
             android:id="@+id/prev_step_button"
             style="?android:attr/buttonBarButtonStyle"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/button_color_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/accessibility_minWidth"
@@ -51,7 +52,7 @@
         <Button
             android:id="@+id/next_step_button"
             style="?android:attr/buttonBarButtonStyle"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/button_color_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/accessibility_minWidth"
