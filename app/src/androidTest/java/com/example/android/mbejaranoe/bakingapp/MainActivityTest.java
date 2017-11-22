@@ -24,9 +24,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class RecipeActivityTest {
+public class MainActivityTest {
 
     public static final String RECIPE_ID_KEY = "recipe_Id";
+    public static final String RECIPE_NAME_KEY = "name";
 
     @Rule
     public IntentsTestRule<MainActivity> mIntentTestRule = new IntentsTestRule<>(MainActivity.class);
@@ -38,5 +39,6 @@ public class RecipeActivityTest {
         onView(withId(R.id.recyclerview_recipe)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         intended(hasComponent(RecipeDetailActivity.class.getName()));
         intended(hasExtraWithKey(RECIPE_ID_KEY));
+        intended(hasExtraWithKey(RECIPE_NAME_KEY));
     }
 }

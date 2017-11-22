@@ -8,6 +8,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +21,10 @@ import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Created by Manolo on 19/11/2017.
@@ -40,15 +43,23 @@ public class RecipeDetailActivityTest {
     @Rule
     public IntentsTestRule<RecipeDetailActivity> mIntentTestRule = new IntentsTestRule<>(RecipeDetailActivity.class);
 
-    @Test
-    public void clickRecipeDetailRecyclerViewItem_OpensStepDetailsActivity(){
+    @Before
+    public void stubExternalIntents(){
+        intending(not(isInternal())).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+    }
 
+    @Before
+    public void stubRecipeDetailActivityIntent(){
         Intent intent = new Intent();
         intent.putExtra(RECIPE_NAME_KEY, "Nutella Pie");
         intent.putExtra(RECIPE_ID_KEY, 1);
 
         intending(hasComponent(RecipeDetailActivity.class.getName()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, intent));
+    }
+
+    @Test
+    public void clickRecipeDetailRecyclerViewItem_OpensStepDetailsActivity(){
 
         // check the recyclerview is displayed
         onView(withId(R.id.recyclerview_recipe_detail)).check(matches(isDisplayed()));
@@ -68,6 +79,4 @@ public class RecipeDetailActivityTest {
         intended(hasExtraWithKey(SHOULD_AUTO_PLAY_KEY));
         intended(hasExtraWithKey(RESUME_POSITION_KEY));
     }
-
-
 }
