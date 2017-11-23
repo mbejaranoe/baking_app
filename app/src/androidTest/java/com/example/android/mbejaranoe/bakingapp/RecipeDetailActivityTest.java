@@ -1,7 +1,9 @@
 package com.example.android.mbejaranoe.bakingapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.filters.LargeTest;
@@ -41,21 +43,22 @@ public class RecipeDetailActivityTest {
     public static final String RESUME_POSITION_KEY = "resumePosition";
 
     @Rule
-    public IntentsTestRule<RecipeDetailActivity> mIntentTestRule = new IntentsTestRule<>(RecipeDetailActivity.class);
+    public IntentsTestRule<RecipeDetailActivity> mIntentTestRule =
+            new IntentsTestRule<RecipeDetailActivity>(RecipeDetailActivity.class){
+        @Override
+        protected Intent getActivityIntent() {
+            Context targetContext = InstrumentationRegistry.getInstrumentation()
+                    .getTargetContext();
+            Intent result = new Intent(targetContext, MainActivity.class);
+            result.putExtra(RECIPE_NAME_KEY, "Nutella Pie");
+            result.putExtra(RECIPE_ID_KEY, 1);
+            return result;
+        }
+    };
 
     @Before
     public void stubExternalIntents(){
         intending(not(isInternal())).respondWith(new ActivityResult(Activity.RESULT_OK, null));
-    }
-
-    @Before
-    public void stubRecipeDetailActivityIntent(){
-        Intent intent = new Intent();
-        intent.putExtra(RECIPE_NAME_KEY, "Nutella Pie");
-        intent.putExtra(RECIPE_ID_KEY, 1);
-
-        intending(hasComponent(RecipeDetailActivity.class.getName()))
-                .respondWith(new ActivityResult(Activity.RESULT_OK, intent));
     }
 
     @Test
@@ -72,7 +75,7 @@ public class RecipeDetailActivityTest {
         // click on that item
         onView(withId(R.id.recyclerview_recipe_detail)).perform(click());
 
-        // check the proper intent has been launched
+        // check the proper intent has been sent
         intended(hasComponent(StepDetailActivity.class.getName()));
         intended(hasExtraWithKey(STEP_INDEX_KEY));
         intended(hasExtraWithKey(RECIPE_ID_KEY));

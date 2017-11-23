@@ -35,8 +35,13 @@ public class MainActivityTest {
     @Test
     public void clickRecipeRecyclerViewItem_OpensRecipeDetailsActivity(){
 
+        // check the recyclerview is displayed
         onView(withId(R.id.recyclerview_recipe)).check(matches(isDisplayed()));
+
+        // click on item at position 0
         onView(withId(R.id.recyclerview_recipe)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        //check the intent is sent with the proper extras
         intended(hasComponent(RecipeDetailActivity.class.getName()));
         intended(hasExtraWithKey(RECIPE_ID_KEY));
         intended(hasExtraWithKey(RECIPE_NAME_KEY));
