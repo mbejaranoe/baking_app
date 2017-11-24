@@ -27,6 +27,7 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
     private final String RECIPE_ID_KEY = "recipe_Id";
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
+    private final String VIDEO_URL_KEY = "videoURL";
     private final String STEP_DETAIL_FRAGMENT_TAG = "stepDetailFragment";
 
     private final int STEP_INDEX_DEFAULT_VALUE = -1;
@@ -75,6 +76,9 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
             Bundle args = new Bundle();
             args.putInt(STEP_INDEX_KEY, stepIndex);
             args.putInt(RECIPE_ID_KEY, recipe_Id);
+            args.putBoolean(SHOULD_AUTO_PLAY_KEY, false);
+            args.putLong(RESUME_POSITION_KEY, 0);
+            args.putString(VIDEO_URL_KEY, "");
             stepDetailFragment.setArguments(args);
 
             // call the fragment manager to add the fragment
@@ -100,6 +104,9 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
         Bundle args = new Bundle();
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
+        args.putBoolean(SHOULD_AUTO_PLAY_KEY, false);
+        args.putLong(RESUME_POSITION_KEY, 0);
+        args.putString(VIDEO_URL_KEY, "");
         newFragment.setArguments(args);
         Log.v(LOG_TAG, "Prev button, stepIndex: " + stepIndex);
         Log.v(LOG_TAG, "Prev button, recipe_Id: " + recipe_Id);
@@ -123,6 +130,9 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
         Bundle args = new Bundle();
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
+        args.putBoolean(SHOULD_AUTO_PLAY_KEY, false);
+        args.putLong(RESUME_POSITION_KEY, 0);
+        args.putString(VIDEO_URL_KEY, "");
 
         newFragment.setArguments(args);
         Log.v(LOG_TAG, "Next button, stepIndex: " + stepIndex);
@@ -148,6 +158,9 @@ public class StepDetailActivity extends AppCompatActivity  implements StepsViewH
         Bundle args = new Bundle();
         args.putInt(STEP_INDEX_KEY, stepIndex);
         args.putInt(RECIPE_ID_KEY, recipe_Id);
+        args.putBoolean(SHOULD_AUTO_PLAY_KEY, false);
+        args.putLong(RESUME_POSITION_KEY, 0);
+        args.putString(VIDEO_URL_KEY, "");
         newFragment.setArguments(args);
 
         // call the fragment manager to replace the fragment

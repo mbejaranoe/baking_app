@@ -3,15 +3,12 @@ package com.example.android.mbejaranoe.bakingapp;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 /**
  * Created by Manolo on 09/10/2017.
@@ -24,6 +21,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
     private int stepIndex;
     private boolean shouldAutoPlay;
     private long resumePosition;
+    private String videoURL;
     private boolean mTwoPane;
 
     private RecipeDetailFragment recipeDetailFragment;
@@ -39,6 +37,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
     private final String RECIPE_ID_KEY = "recipe_Id";
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
+    private final String VIDEO_URL = "videoURL";
     private final String TWO_PANE_KEY = "twoPane";
 
 
@@ -104,30 +103,17 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
                 stepIndex = 0;
                 shouldAutoPlay = false;
                 resumePosition = 0;
+                videoURL = "";
                 argsStepDetailFragment.putInt(STEP_INDEX_KEY, stepIndex);
                 argsStepDetailFragment.putInt(RECIPE_ID_KEY, recipe_Id);
                 argsStepDetailFragment.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
                 argsStepDetailFragment.putLong(RESUME_POSITION_KEY, resumePosition);
+                argsStepDetailFragment.putString(VIDEO_URL, videoURL);
                 stepDetailFragment.setArguments(argsStepDetailFragment);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.step_detail_container, stepDetailFragment, STEP_DETAIL_FRAGMENT_TAG)
                         .commit();
-            }
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                int screenWidthDp = getResources().getConfiguration().screenWidthDp;
-
-                FrameLayout recipeDetailContainer = (FrameLayout) findViewById(R.id.recipe_detail_container);
-                if (recipeDetailContainer != null) {
-                    int recipeDetailWidth= screenWidthDp/3;
-                    recipeDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(recipeDetailWidth, -1));
-                }
-                FrameLayout stepDetailContainer = (FrameLayout) findViewById(R.id.step_detail_container);
-                if (stepDetailContainer != null) {
-                    int stepDetailWidth = (screenWidthDp/3) * 2;
-                    stepDetailContainer.setLayoutParams(new LinearLayout.LayoutParams(stepDetailWidth, -1));
-                }
             }
         } else { // phone mode
             mTwoPane = false;
@@ -163,10 +149,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
             Bundle argsStepDetailFragment = new Bundle();
             shouldAutoPlay = false;
             resumePosition = 0;
+            videoURL = "";
             argsStepDetailFragment.putInt(STEP_INDEX_KEY, stepIndex);
             argsStepDetailFragment.putInt(RECIPE_ID_KEY, recipe_Id);
             argsStepDetailFragment.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
             argsStepDetailFragment.putLong(RESUME_POSITION_KEY, resumePosition);
+            argsStepDetailFragment.putString(VIDEO_URL, videoURL);
             newFragment.setArguments(argsStepDetailFragment);
 
             Log.v(LOG_TAG, "onStepSelected - replace StepDetailFragment with new fragment");
@@ -186,10 +174,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepsView
             Bundle extras = new Bundle();
             shouldAutoPlay = false;
             resumePosition = 0;
+            videoURL = "";
             extras.putInt(STEP_INDEX_KEY, stepIndex);
             extras.putInt(RECIPE_ID_KEY, recipe_Id);
             extras.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
             extras.putLong(RESUME_POSITION_KEY, resumePosition);
+            extras.putString(VIDEO_URL, videoURL);
             intent.putExtras(extras);
 
             Log.v(LOG_TAG, "onStepSelected - launch new activity");

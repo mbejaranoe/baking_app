@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private final String RECIPE_ID_KEY = "recipe_Id";
     private final String SHOULD_AUTO_PLAY_KEY = "shouldAutoPlay";
     private final String RESUME_POSITION_KEY = "resumePosition";
+    private final String VIDEO_URL_KEY = "videoURL";
 
     @BindView(R.id.step_detail_simple_exoplayer_view) SimpleExoPlayerView stepDetailSimpleExoPlayerView;
     private SimpleExoPlayer mSimpleExoPlayer;
@@ -79,6 +81,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private PlaybackStateCompat.Builder mStateBuilder;
     private boolean shouldAutoPlay;
     private long resumePosition;
+    private String videoURL;
 
     // Constructor
     public StepDetailFragment() {
@@ -106,12 +109,14 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 mRecipe_Id = args.getInt(RECIPE_ID_KEY);
                 shouldAutoPlay = false;
                 resumePosition = 0;
+                videoURL = "";
                 Log.v(LOG_TAG, "onCreateView: tablet mode and savedInstanceState NULL");
             } else {
                 mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
                 mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
                 shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
                 resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
+                videoURL = savedInstanceState.getString(VIDEO_URL_KEY);
                 Log.v(LOG_TAG, "onCreateView: tablet mode and savedInstanceState NOT NULL");
             }
         } else { // phone mode
@@ -122,6 +127,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 mRecipe_Id = intent.getExtras().getInt(RECIPE_ID_KEY);
                 shouldAutoPlay = false;
                 resumePosition = 0;
+                videoURL = "";
                 Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NULL");
             } else {
                 if (savedInstanceState == null) {
@@ -129,12 +135,14 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     mRecipe_Id = getArguments().getInt(RECIPE_ID_KEY);
                     shouldAutoPlay = getArguments().getBoolean(SHOULD_AUTO_PLAY_KEY);
                     resumePosition = getArguments().getLong(RESUME_POSITION_KEY);
+                    videoURL = getArguments().getString(VIDEO_URL_KEY);
                     Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NULL");
                 } else {
                     mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
                     mRecipe_Id = savedInstanceState.getInt(RECIPE_ID_KEY);
                     shouldAutoPlay = savedInstanceState.getBoolean(SHOULD_AUTO_PLAY_KEY);
                     resumePosition = savedInstanceState.getLong(RESUME_POSITION_KEY);
+                    videoURL = savedInstanceState.getString(VIDEO_URL_KEY);
                     Log.v(LOG_TAG, "onCreateView: phone mode and savedInstanceState NOT NULL");
                 }
             }
@@ -235,12 +243,13 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
                 // set the video url for video playback, or the imageview in case there is no video url
                 releasePlayer();
-                if (!(step.getVideoURL().equals(""))) {
+                videoURL = step.getVideoURL();
+                if (!(TextUtils.isEmpty(videoURL))) {
                     stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                     // Initialize the Media Session
                     initializeMediaSession();
                     // Initialize the Player
-                    initializePlayer(Uri.parse(step.getVideoURL()));
+                    initializePlayer(Uri.parse(videoURL));
                 } else {
                     stepDetailSimpleExoPlayerView.setVisibility(View.GONE);
                     Log.v(LOG_TAG, "No video url available.");
@@ -276,10 +285,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                 stepDetailSimpleExoPlayerView.setLayoutParams(params);
 
                 // set the video url for video playback, or the imageview in case there is no video url
-                if (!(step.getVideoURL().equals(""))) {
+                releasePlayer();
+                videoURL = step.getVideoURL();
+                if (!(TextUtils.isEmpty(videoURL))) {
                     stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                     initializeMediaSession();
-                    initializePlayer(Uri.parse(step.getVideoURL()));
+                    initializePlayer(Uri.parse(videoURL));
                 } else {
                     stepDetailDescriptionTextView.setVisibility(View.VISIBLE);
                     if (step.getDescription().equals("")) {
@@ -310,12 +321,13 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
             // set the video url for video playback, or the imageview in case there is no video url
             releasePlayer();
-            if (!(step.getVideoURL().equals(""))) {
+            videoURL = step.getVideoURL();
+            if (!(TextUtils.isEmpty(videoURL))) {
                 stepDetailSimpleExoPlayerView.setVisibility(View.VISIBLE);
                 // Initialize the Media Session
                 initializeMediaSession();
                 // Initialize the Player
-                initializePlayer(Uri.parse(step.getVideoURL()));
+                initializePlayer(Uri.parse(videoURL));
             } else {
                 stepDetailSimpleExoPlayerView.setVisibility(View.GONE);
                 Log.v(LOG_TAG, "No video url available.");
@@ -345,13 +357,10 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onResume() {
+        super.onResume();
 
-        releasePlayer();
-        if (mMediaSession != null) {
-            mMediaSession.setActive(false);
-        }
+        updateStepDetails();
     }
 
     /**
@@ -496,5 +505,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         }
         outState.putBoolean(SHOULD_AUTO_PLAY_KEY, shouldAutoPlay);
         outState.putLong(RESUME_POSITION_KEY, resumePosition);
+        outState.putString(VIDEO_URL_KEY, videoURL);
     }
 }

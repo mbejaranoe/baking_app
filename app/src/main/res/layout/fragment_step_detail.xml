@@ -21,6 +21,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="visible"
+        android:scrollbars = "vertical"
         tools:text="@string/dummy_description"
         style="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@color/colorPrimary"/>
